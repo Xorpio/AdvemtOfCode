@@ -1,9 +1,13 @@
-﻿namespace PuzzleConsole;
+﻿using Spectre.Console.Cli;
+
+namespace PuzzleConsole;
 
 class Program
 {
-    static void Main(string[] args)
+    static int Main(string[] args)
     {
-        Console.WriteLine("Hello World!");
+        var app = new CommandApp<StartCommand>();
+
+        return app.Run(args);
     }
 }
