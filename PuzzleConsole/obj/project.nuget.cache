@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "yYT1b1cUh/WlA0+hj26A2L1EAdskVOw4xjgKYaUiO2oUUUZZy9o1yzkVcr7bf5YtQj5z+200hVDTO0VWmuMm0Q==",
+  "dgSpecHash": "TCwEN+RUioNl/BXL0Ny+slqvSyt56r9TP3vBkG4YjMU413JrJHi3363wA2kb/80eBHo0+hK0iLzCjIYVdN1SIQ==",
   "success": true,
   "projectFilePath": "C:\\Projects\\AdventOfCode\\PuzzleConsole\\PuzzleConsole.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ITWNG01\\.nuget\\packages\\spectre.console\\0.42.0\\spectre.console.0.42.0.nupkg.sha512",
+    "C:\\Users\\ITWNG01\\.nuget\\packages\\system.reactive\\5.0.0\\system.reactive.5.0.0.nupkg.sha512",
     "C:\\Users\\ITWNG01\\.nuget\\packages\\wcwidth\\0.2.0\\wcwidth.0.2.0.nupkg.sha512"
   ],
   "logs": []
