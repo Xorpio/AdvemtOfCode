@@ -1,12 +1,13 @@
 ﻿using PuzzleConsole.Year2021;
 using Xunit;
+using ScenarioTests;
 
 namespace PuzzleConsole.test.Year2021;
 
-public class Day8Test
+public partial class Day8Test
 {
-    [Fact]
-    public void SolveTest()
+    [Scenario]
+    public void SolveTest(ScenarioContext scenario)
     {
         var sut = new Day8();
 
@@ -25,8 +26,13 @@ public class Day8Test
 
         var solution = sut.Solve(puzzle);
 
-        solution.First().Should().Be("26");
-        solution.Last().Should().Be("61229");
+        scenario.Fact("First result should be 26", () => {
+            solution.First().Should().Be("26");
+        });
+
+        scenario.Fact("second result should be larger", () => {
+            solution.Last().Should().Be("61229");
+        });
     }
 
     [Fact]
