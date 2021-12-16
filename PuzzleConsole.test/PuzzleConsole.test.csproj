@@ -29,4 +29,8 @@
     <ProjectReference Include="..\PuzzleConsole\PuzzleConsole.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Year2015\" />
+  </ItemGroup>
+
 </Project>
