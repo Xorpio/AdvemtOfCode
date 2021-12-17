@@ -26,7 +26,7 @@ public class StartCommand : Command<StartCommand.Settings>
 
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
-        var objectToInstantiate = $"PuzzleConsole.Year{settings.Year}.Day{settings.Day}, PuzzleConsole";
+        var objectToInstantiate = $"PuzzleConsole.Year{settings.Year}.Day{settings.Day}.Day{settings.Day}, PuzzleConsole";
 
         var objectType = Type.GetType(objectToInstantiate);
 
