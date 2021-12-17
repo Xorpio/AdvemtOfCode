@@ -183,7 +183,8 @@ public partial class Day13Test
             res.Should().BeEquivalentTo(expected);
         });
 
-        scenario.Fact("SolveTest", () => { 
+        scenario.Fact("SolveTest", () =>
+        {
             var input = new string[] {
                 "6,10",
                 "0,14",
@@ -211,6 +212,6 @@ public partial class Day13Test
             var sol = sut.Solve(input);
 
             sol.First().Should().Be("17");
-        })
+        });
     }
 }
