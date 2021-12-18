@@ -1,4 +1,4 @@
-namespace PuzzleConsole.Year2021;
+namespace PuzzleConsole.Year2021.Day13;
 
 public class Day13 : ISolver
 {

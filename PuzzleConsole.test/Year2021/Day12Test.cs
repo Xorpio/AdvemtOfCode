@@ -1,4 +1,4 @@
-﻿using PuzzleConsole.Year2021;
+﻿using PuzzleConsole.Year2021.Day12;
 using Xunit;
 using ScenarioTests;
 

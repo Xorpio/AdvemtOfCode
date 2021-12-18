@@ -1,6 +1,6 @@
 ﻿using System.Reactive.Linq;
 
-namespace PuzzleConsole.Year2021;
+namespace PuzzleConsole.Year2021.Day10;
 
 public class Day10 : ISolver
 {

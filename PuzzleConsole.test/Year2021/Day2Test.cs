@@ -1,4 +1,4 @@
-﻿using PuzzleConsole.Year2021;
+﻿using PuzzleConsole.Year2021.Day2;
 using Xunit;
 
 namespace PuzzleConsole.test.Year2021;

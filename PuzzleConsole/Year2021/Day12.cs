@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
-namespace PuzzleConsole.Year2021;
+namespace PuzzleConsole.Year2021.Day12;
 
 public class Day12 : ISolver
 {
