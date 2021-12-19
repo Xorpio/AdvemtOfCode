@@ -28,8 +28,7 @@ public class Day15 : ISolver
 
     public decimal FindPath(int[,] puzzle)//, int x, int y, string[] visited)
     {
-        var visited = new List<(int x, int y)>();
-        var unvisited = new List<(int x, int y)>();
+        var visited = new Dictionary<string, bool>();
 
         var lookupTable = new Dictionary<(int x, int y), Node>();
 
@@ -38,27 +37,54 @@ public class Day15 : ISolver
             for (int x = 0; x < puzzle.GetLength(1); x++)
             {
                 var node = (x, y);
-                unvisited.Add(node);
-                lookupTable.Add(node, new Node() { Risk = Decimal.MaxValue });
+                visited.Add($"{node.x}.{node.y}", false);
+                // lookupTable.Add(node, new Node() { Risk = Decimal.MaxValue });
             }
         }
 
-        lookupTable[(0,0)].Risk = 0;
+        (int x, int y) maxkey = (puzzle.GetLength(0) - 1, puzzle.GetLength(1) - 1);
+
+        lookupTable.Add((0,0), new Node() { Risk = 0 });
+        lookupTable.Add(maxkey, new Node() { Risk = Decimal.MaxValue });
+        var max = visited.Count();
+
 
         do
         {
             var currentNode = lookupTable
                 .OrderBy(ln => ln.Value.Risk)
-                .First(ln => unvisited.Contains(ln.Key)).Key;
+                .First(ln => !visited[$"{ln.Key.x}.{ln.Key.y}"]).Key;
 
-            unvisited.Remove(currentNode);
+            Console.WriteLine($"Looking at node {currentNode}. ({max}) with risk {lookupTable[currentNode].Risk}");
 
-            var neighbours = unvisited.Where(xy =>
-                (Math.Abs(xy.x - currentNode.x) == 1 && xy.y == currentNode.y) ||
-                (Math.Abs(xy.y - currentNode.y) == 1 && xy.x == currentNode.x));
+            visited[$"{currentNode.x}.{currentNode.y}"] = true;
+
+            var neighbours = new List<(int x, int y)>();
+            if (currentNode.x > 0 &&
+                !visited[$"{currentNode.x - 1}.{currentNode.y}"])
+            {
+                neighbours.Add((currentNode.x -1, currentNode.y));
+            }
+            if (currentNode.y > 0 &&
+                !visited[$"{currentNode.x}.{currentNode.y - 1}"])
+            {
+                neighbours.Add((currentNode.x, currentNode.y - 1));
+            }
+
+            if (currentNode.x < puzzle.GetLength(0) - 1 &&
+                !visited[$"{currentNode.x + 1}.{currentNode.y}"])
+            {
+                neighbours.Add((currentNode.x + 1, currentNode.y));
+            }
+            if (currentNode.y < puzzle.GetLength(1) - 1 &&
+                !visited[$"{currentNode.x}.{currentNode.y + 1}"])
+            {
+                neighbours.Add((currentNode.x, currentNode.y + 1));
+            }
 
             foreach (var n in neighbours)
             {
+                lookupTable.TryAdd(n, new Node() { Risk = Decimal.MaxValue, Prev = currentNode});
                 var newRisk = lookupTable[currentNode].Risk + puzzle[n.x, n.y];
                 if (newRisk < lookupTable[n].Risk)
                 {
@@ -67,8 +93,7 @@ public class Day15 : ISolver
                 }
             }
 
-            visited.Add(currentNode);
-        } while (unvisited.Any());
+        } while (lookupTable[maxkey].Risk == Decimal.MaxValue);
 
         return lookupTable[(puzzle.GetLength(0) - 1, puzzle.GetLength(1) - 1)].Risk;
     }
