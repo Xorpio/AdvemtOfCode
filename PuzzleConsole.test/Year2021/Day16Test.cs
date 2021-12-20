@@ -42,23 +42,51 @@ public partial class Day16Test
             res.Should().Be(27);
         });
 
-        var cases = new (string input, string answer)[]
+        var cases = new (string input, string answer, string calc)[]
         {
-            new("D2FE28", "6"),
-            new("38006F45291200", "1"),
-            new("EE00D40C823060", "7"),
-            new("8A004A801A8002F478", "16"),
-            new("620080001611562C8802118E34", "12"),
-            new("C0015000016115A2E0802F182340", "23"),
-            new("A0016C880162017C3686B18A3D4780", "31"),
+            new("D2FE28", "6", "2021"),
+            new("38006F45291200", "9", null),
+            new("EE00D40C823060", "14", null),
+            new("8A004A801A8002F478", "16", null),
+            new("620080001611562C8802118E34", "12", null),
+            new("C0015000016115A2E0802F182340", "23", null),
+            new("A0016C880162017C3686B18A3D4780", "31", null),
         };
         foreach (var caseAnswer in cases)
         {
-            scenario.Theory("SolveTest 2 packets", caseAnswer, () =>
+            scenario.Theory("SolveTest part 1 2 packets", caseAnswer, () =>
             {
                 var solution = sut.Solve(new string[]{ caseAnswer.input });
 
                 solution.First().Should().Be(caseAnswer.answer);
+
+                if (caseAnswer.calc != null)
+                {
+                    solution.Count().Should().Be(2);
+                    solution.Last().Should().Be(caseAnswer.calc);
+                }
+            });
+        }
+
+        var otherCases = new (string input, string answer)[]
+        {
+            new("C200B40A82","3"),
+            new("04005AC33890", "54"),
+            new("880086C3E88112", "7"),
+            new("CE00C43D881120", "9"),
+            new("D8005AC2A8F0", "1"),
+            new("F600BC2D8F", "0"),
+            new("9C005AC2F8F0", "0"),
+            new("9C0141080250320F1802104A08", "1"),
+        };
+        foreach (var caseAnswer in otherCases)
+        {
+            scenario.Theory("SolveTest part 2", caseAnswer, () =>
+            {
+                var solution = sut.Solve(new string[]{ caseAnswer.input });
+
+                solution.Count().Should().Be(2);
+                solution.Last().Should().Be(caseAnswer.answer);
             });
         }
     }

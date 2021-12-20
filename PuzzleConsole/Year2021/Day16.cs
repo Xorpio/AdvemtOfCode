@@ -14,84 +14,21 @@ public class Day16 : ISolver
 
         var answer = 0;
 
+        decimal calculation = 0;
+
         do
         {
             //get header
             var lengAndPoints = GetPoints(msg[pointer..]);
 
+            calculation += lengAndPoints.calculation;
             answer += lengAndPoints.points;
             pointer += lengAndPoints.length;
         } while (pointer < puzzle.Length); // string ?
 
-        return new[] { answer.ToString() };
+        return new[] { answer.ToString(), calculation.ToString() };
     }
 
-    private int GetNewPointerOperater(string puzzle, int pointer)
-    {
-        var begin = pointer;
-        pointer += 2;
-        var msg = DecodeToBin(puzzle[begin..pointer]);
-        if (msg[6] == '0')
-        {
-            pointer += 5;
-            msg = DecodeToBin(puzzle[begin..pointer]);
-            var msgLength = Convert.ToInt16(msg[7..22], 2);
-            while (msg.Length < msgLength + 22)
-            {
-                pointer++;
-                msg += DecodeToBin(puzzle[(pointer - 1)..pointer]);
-            }
-        }
-        else
-        {
-            pointer += 4;
-            msg = DecodeToBin(puzzle[begin..pointer]);
-            var msgLength = Convert.ToInt16(msg[7..18], 2);
-            var p = 18;
-            for (int i = 0; i < msgLength; i++)
-            {
-                pointer = getNewInnerPointer(puzzle[begin..], p, pointer);
-            }
-        }
-
-        return pointer + 1;
-    }
-
-    int getNewInnerPointer(string puzzle, int point, int pointer)
-    {
-        var add = Math.Ceiling((point + 6) / 4.0);
-        var msg = DecodeToBin(puzzle[pointer..(pointer + (int)add)]);
-        if (msg[(point + 3)..(point + 6)] != "100")
-        {
-            throw new Exception("Msg type not supported");
-        }
-
-        return int.MaxValue;
-    }
-
-    private int GetNewPointerLiteral(string puzzle, int pointer)
-    {
-        var begin = pointer;
-        pointer += 2;
-        var msg = DecodeToBin(puzzle[begin..pointer]);
-        var point = 6;
-
-        bool more = false;
-
-        do
-        {
-            while (msg.Length < point + 4)
-            {
-                pointer++;
-                msg = DecodeToBin(puzzle[begin..pointer]);
-            }
-
-            more = msg[point] == '1';
-            point += 5;
-        } while (more);
-
-        return pointer + 1;
-    }
 
     public (int Version, int Type) GetHeader(string input)
     {
@@ -135,51 +72,119 @@ public class Day16 : ISolver
         return ret;
     }
 
-    public (int points, int length) GetPoints(string puzzle)
+    public (int points, int length, decimal calculation) GetPoints(string puzzle)
     {
-        var points = Convert.ToInt16(puzzle[0..3], 2);
+        var points = Convert.ToInt32(puzzle[0..3], 2);
         var type = Convert.ToInt16(puzzle[3..6], 2);
 
         if (type == 4)
         {
-            return (points, GetLiteralLength(puzzle[6..]) + 6);
+            var (number, length) = GetLiteralLength(puzzle[6..]);
+            return (points, length + 6, number);
         }
+
+        var count = 0;
+        var p = 0;
+        var lenMsg = 0;
+        var messages = new List<(int points, int length, decimal calculation)>();
 
         if (puzzle[6] == '0')
         {
-            var lenMsg = Convert.ToInt16(puzzle[7..22], 2);
-            var p = 22; //start of msg
-            var count = p;
-            while(count < p + lenMsg)
+            lenMsg = Convert.ToInt16(puzzle[7..22], 2);
+            p = 22; //start of msg
+            count = p;
+            while (count < p + lenMsg)
             {
-                points += Convert.ToInt16(puzzle[count..(count + 3)], 2);
-                if(Convert.ToInt16(puzzle[(count + 3)..(count + 6)], 2) != 4)
-                {
-                    throw new Exception("Expected literal");
-                }
+                var lp = GetPoints(puzzle[count..]);
 
-                count += GetLiteralLength(puzzle[(count + 6)..]) + 6;
+                count += lp.length;
+                messages.Add(lp);
             }
+
+        }
+        else
+        {
+            lenMsg = Convert.ToInt16(puzzle[7..18], 2);
+            p = 18; //start of msg
+            count = p;
+            for (var i = 0; i < lenMsg; i++)
+            {
+                var lp = GetPoints(puzzle[count..]);
+
+                count += lp.length;
+                messages.Add(lp);
+            }
+
         }
 
+        var sum = messages.Aggregate((acc, res) => (acc.points + res.points, acc.length + res.length, acc.calculation + res.calculation));
+        sum.points += points;
+        sum.length += p;
 
-        return (points, 0);
+        decimal answer;
 
+        switch (type)
+        {
+            case 1:
+                answer = 1;
+                foreach (var msg in messages)
+                {
+                    answer = answer * msg.calculation;
+                }
+                sum.calculation = answer;
+                break;
+            case 2:
+                answer = decimal.MaxValue;
+                foreach (var msg in messages)
+                {
+                    if (msg.calculation < answer)
+                        answer = msg.calculation;
+                }
+                sum.calculation = answer;
+                break;
+            case 3:
+                answer = decimal.MinValue;
+                foreach (var msg in messages)
+                {
+                    if (msg.calculation > answer)
+                        answer = msg.calculation;
+                }
+                sum.calculation = answer;
+                break;
+            case 4:
+                answer = decimal.MinValue;
+                foreach (var msg in messages)
+                {
+                    if (msg.calculation > answer)
+                        answer = msg.calculation;
+                }
+                sum.calculation = answer;
+                break;
+            case 5:
+                sum.calculation = messages[0].calculation > messages[1].calculation ? 1 : 0;
+                break;
+            case 6:
+                sum.calculation = messages[0].calculation < messages[1].calculation ? 1 : 0;
+                break;
+            case 7:
+                sum.calculation = messages[0].calculation == messages[1].calculation ? 1 : 0;
+                break;
+        }
+
+        return sum;
     }
 
-    public int GetLiteralLength(string s)
+    public (decimal num, int length) GetLiteralLength(string s)
     {
         int leng = 5;
+        string number = "";
         while (s[(leng - 5)] == '1')
         {
+            number += s[(leng - 4)..leng];
             leng += 5;
         }
 
-        return leng;
+        number += s[(leng - 4)..leng];
+        return (Convert.ToInt64(number, 2), leng);
     }
-}
-
-public enum PacketType
-{
-
 }
