@@ -13,12 +13,14 @@
     "Day": {
       "type": "parameter",
       "replaces": "_D_",
-      "fileRename": "_D_"
+      "fileRename": "_D_",
+      "isRequired": true
     },
     "Year": {
       "type": "parameter",
       "replaces": "_Y_",
-      "fileRename": "_Y_"
+      "fileRename": "_Y_",
+      "isRequired": true
     }
   }
 }
