@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Niek de Gooijer",
+  "classifications": [ "Common", "Code" ],
+  "identity": "xorpio.AdventOfCode",
+  "name": "Advent of code, new day",
+  "shortName": "aoc",
+  "tags": {
+    "language": "C#",
+    "type": "item"
+  },
+  "symbols": {
+    "Day": {
+      "type": "parameter",
+      "replaces": "_D_",
+      "fileRename": "_D_"
+    },
+    "Year": {
+      "type": "parameter",
+      "replaces": "_Y_",
+      "fileRename": "_Y_"
+    }
+  }
+}
