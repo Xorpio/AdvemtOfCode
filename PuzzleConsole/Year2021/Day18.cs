@@ -4,7 +4,22 @@ public class Day18 : ISolver
 {
     public string[] Solve(string[] puzzle)
     {
-	    return puzzle;
+        var sum = SnailfishNumber.FromString(puzzle[0]);    
+
+        var list = new List<string>();
+        list.Add(sum.ToString());
+
+        for(int i = 1;i < puzzle.Length;i++)
+        {
+            var num = SnailfishNumber.FromString(puzzle[i]);
+            sum += num;
+            list.Add(sum.ToString());
+        }
+
+        return new string[]
+        {
+            sum.Magnitude.ToString(), sum.ToString()
+        };
     }
 }
 
@@ -14,6 +29,16 @@ public class SnailfishNumber
     public int? LeftNumber { get; set; }
     public SnailfishNumber RightPart { get; set; }
     public int? RightNumber { get; set; }
+    public decimal Magnitude
+    {
+        get
+        {
+            var left = (LeftPart is SnailfishNumber) ? LeftPart.Magnitude : LeftNumber.Value;
+            var right = (RightPart is SnailfishNumber) ? RightPart.Magnitude : RightNumber.Value;
+
+            return (left * 3) + (right * 2);
+        }
+    }
 
     public override string ToString()
     {
@@ -22,7 +47,7 @@ public class SnailfishNumber
         return $"[{left},{right}]";
     }
 
-    public static SnailfishNumber operator + (SnailfishNumber a, SnailfishNumber b)
+    public static SnailfishNumber operator +(SnailfishNumber a, SnailfishNumber b)
     {
         return FromString($"[{a},{b}]");
     }
@@ -77,8 +102,53 @@ public class SnailfishNumber
         var split = false;
         do
         {
+            explode = false;
+            split = false;
+            var before = this.ToString();
+
             explode = Explode(0).exploded;
+            if (!explode)
+            {
+                split = Split();
+            }
+
+            var after = $"explode: {explode}, Split: {split}: {this}";
         } while (explode || split);
+    }
+
+    private bool Split()
+    {
+        if (LeftNumber > 9)
+        {
+            var (left, right) = SplitNum(LeftNumber.Value);
+            LeftNumber = null;
+            LeftPart = SnailfishNumber.FromString($"[{left},{right}]");
+            return true;
+        }
+        if (LeftPart is SnailfishNumber && LeftPart.Split())
+        {
+            return true;
+        }
+        if (RightNumber > 9)
+        {
+            var (left, right) = SplitNum(RightNumber.Value);
+            RightNumber = null;
+            RightPart = SnailfishNumber.FromString($"[{left},{right}]");
+            return true;
+        }
+        if (RightPart is SnailfishNumber && RightPart.Split())
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private (int left, int right) SplitNum(int num)
+    {
+        var left = (int)Math.Floor(num / 2.0);
+        var right = (int)Math.Ceiling(num / 2.0);
+
+        return (left, right);
     }
 
     public (bool exploded, int left, int right) Explode(int depth)
@@ -88,8 +158,6 @@ public class SnailfishNumber
             var left = LeftPart.Explode(depth + 1);
             if (left.exploded)
             {
-                LeftPart = null;
-                LeftNumber = 0;
                 if (left.right > 0)
                 {
                     if (RightPart is SnailfishNumber)
@@ -108,15 +176,77 @@ public class SnailfishNumber
 
         if (RightPart != null)
         {
-            return RightPart.Explode(depth + 1);
+            var right = RightPart.Explode(depth + 1);
+            if (right.exploded)
+            {
+                if (right.left > 0)
+                {
+                    if (LeftPart is SnailfishNumber)
+                    {
+                        LeftPart.AddFromRight(right.left);
+                    }
+                    else
+                    {
+                        LeftNumber += right.left;
+                    }
+                    right.left = 0;
+                }
+                return right;
+            }
         }
 
-        if (depth > 4)
+        if (depth >= 3 && LeftPart is SnailfishNumber)
         {
-            return (true, LeftNumber.Value, RightNumber.Value);
+            var left = LeftPart.LeftNumber.Value;
+            var right = LeftPart.RightNumber.Value;
+            LeftPart = null;
+            LeftNumber = 0;
+
+
+            if (RightPart is SnailfishNumber)
+            {
+                RightPart.AddFromLeft(right);
+            }
+            else
+            {
+                RightNumber += right;
+            }
+
+            return (true, left, 0);
+        }
+
+        if (depth >= 3 && RightPart is SnailfishNumber)
+        {
+            var left = RightPart.LeftNumber.Value;
+            var right = RightPart.RightNumber.Value;
+            RightPart = null;
+            RightNumber = 0;
+
+            if (LeftPart is SnailfishNumber)
+            {
+                LeftPart.AddFromLeft(left);
+            }
+            else
+            {
+                LeftNumber += left;
+            }
+
+            return (true, 0, right);
         }
 
         return (false, 0, 0);
+    }
+
+    private void AddFromRight(int num)
+    {
+        if (RightPart is SnailfishNumber)
+        {
+            RightPart.AddFromRight(num);
+        }
+        else
+        {
+            RightNumber += num;
+        }
     }
 
     public void AddFromLeft(int num)
