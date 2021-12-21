@@ -60,8 +60,6 @@ public class Day5 : ISolver
         }
 
         return new[] { $"{count}", count2.ToString() };
-
-        return null;
     }
 
     private void drawLine(int[,] grid, Xy @from, Xy to)

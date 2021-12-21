@@ -47,8 +47,6 @@ public partial class Day17Test
 
         scenario.Fact("Get max Y", () =>
         {
-            var input = "target area: x=20..30, y=-10..-5";
-
             (int XMin, int XMax, int YMin, int YMax) target = new(20, 30, -5, -10);
             
             var expected = 45;
