@@ -1,24 +1,42 @@
+using System.Linq;
+using PuzzleConsole;
+
 namespace PuzzleConsole.Year2021.Day18;
 
 public class Day18 : ISolver
 {
     public string[] Solve(string[] puzzle)
     {
-        var sum = SnailfishNumber.FromString(puzzle[0]);    
+        var nums = puzzle.Select(l => SnailfishNumber.FromString(l));
 
-        var list = new List<string>();
-        list.Add(sum.ToString());
+        decimal max = 0;
+        SnailfishNumber sum = null;
 
-        for(int i = 1;i < puzzle.Length;i++)
+        foreach (var num in nums)
         {
-            var num = SnailfishNumber.FromString(puzzle[i]);
-            sum += num;
-            list.Add(sum.ToString());
+            foreach (var num2 in nums)
+            {
+                if (num.ToString() != num2.ToString())
+                {
+                    var magA = (num + num2).Magnitude;
+                    var magB = (num + num2).Magnitude;
+                    if (magA > max)
+                    {
+                        max = magA;
+                    }
+                    if (magB > max)
+                    {
+                        max = magB;
+                    }
+                }
+            }
+
+            sum = (sum is null) ? num : sum + num;
         }
 
         return new string[]
         {
-            sum.Magnitude.ToString(), sum.ToString()
+            sum.Magnitude.ToString(), max.ToString()
         };
     }
 }
@@ -104,15 +122,12 @@ public class SnailfishNumber
         {
             explode = false;
             split = false;
-            var before = this.ToString();
 
             explode = Explode(0).exploded;
             if (!explode)
             {
                 split = Split();
             }
-
-            var after = $"explode: {explode}, Split: {split}: {this}";
         } while (explode || split);
     }
 
@@ -122,7 +137,9 @@ public class SnailfishNumber
         {
             var (left, right) = SplitNum(LeftNumber.Value);
             LeftNumber = null;
-            LeftPart = SnailfishNumber.FromString($"[{left},{right}]");
+            LeftPart = new SnailfishNumber();
+            LeftPart.LeftNumber = left;
+            LeftPart.RightNumber = right;
             return true;
         }
         if (LeftPart is SnailfishNumber && LeftPart.Split())
@@ -133,7 +150,9 @@ public class SnailfishNumber
         {
             var (left, right) = SplitNum(RightNumber.Value);
             RightNumber = null;
-            RightPart = SnailfishNumber.FromString($"[{left},{right}]");
+            RightPart = new SnailfishNumber();
+            RightPart.LeftNumber = left;
+            RightPart.RightNumber = right;
             return true;
         }
         if (RightPart is SnailfishNumber && RightPart.Split())

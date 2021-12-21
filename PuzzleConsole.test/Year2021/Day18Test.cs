@@ -104,36 +104,6 @@ public partial class Day18Test
             });
         }
 
-        scenario.Fact("Solve simple", () =>
-        {
-            var puzzle = new string[]
-            {
-                "[1,1]",
-                "[2,2]",
-                "[3,3]",
-                "[4,4]",
-                "[5,5]",
-                "[6,6]",
-
-            };
-            var solution = sut.Solve(puzzle);
-
-            solution.Last().Should().Be("[[[[5,0],[7,4]],[5,5]],[6,6]]");
-
-        });
-
-        scenario.Fact("Solve COmplex add", () => {
-            var a = SnailfishNumber.FromString("[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]");
-            var b = SnailfishNumber.FromString("[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]");
-
-            a.ToString().Should().Be("[[[0,[4,5]],[0,0]],[[[4,5],[2,6]],[9,5]]]");
-            b.ToString().Should().Be("[7,[[[3,7],[4,3]],[[6,3],[8,8]]]]");
-
-            var c = a + b;
-
-            c.Should().Be("[[[[4,0],[5,4]],[[7,7],[6,0]]],[[8,[7,7]],[[7,9],[5,0]]]]");
-        });
-
         scenario.Fact("Solve", () =>
         {
             var puzzle = new string[]
@@ -152,8 +122,8 @@ public partial class Day18Test
             };
             var solution = sut.Solve(puzzle);
 
-            //solution.First().Should().Be("4140");
-            //solution.Last().Should().Be("[[[[6,6],[7,6]],[[7,7],[7,0]]],[[[7,7],[7,7]],[[7,8],[9,9]]]]");
+            solution.First().Should().Be("4140");
+            solution.Last().Should().Be("3993");
 
         });
 
