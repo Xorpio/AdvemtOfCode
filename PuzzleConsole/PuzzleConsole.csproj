@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Spectre.Console" Version="0.42.0" />
     <PackageReference Include="System.Reactive" Version="5.0.0" />
+    <PackageReference Include="xunit.extensibility.core" Version="2.4.1" />
   </ItemGroup>
 
 </Project>

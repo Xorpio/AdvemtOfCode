@@ -4,6 +4,8 @@ using ScenarioTests;
 
 namespace PuzzleConsole.test.Year2021;
 
+[Trait("Year", "2021")]
+[Trait("Day", "10")]
 public partial class Day10Test
 {
     [Scenario]

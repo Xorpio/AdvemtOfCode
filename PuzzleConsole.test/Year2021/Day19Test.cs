@@ -1,7 +1,10 @@
 ﻿using PuzzleConsole.Year2021.Day19;
+using Xunit;
 
 namespace PuzzleConsole.test.Year2021;
 
+[Trait("Year", "2021")]
+[Trait("Day", "19")]
 public partial class Day19Test
 {
     [Scenario]

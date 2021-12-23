@@ -1,3 +1,5 @@
+using Xunit;
+
 namespace PuzzleConsole.Year2021.Day19;
 
 public class Day19 : ISolver

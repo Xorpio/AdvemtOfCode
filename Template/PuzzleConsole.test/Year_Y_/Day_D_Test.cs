@@ -2,8 +2,9 @@
 
 namespace PuzzleConsole.test.Year_Y_;
 
-public partial class Day_D_Test
-{
+[Trait("Year", "_Y_")]
+[Trait("Day", "_D_")]
+public partial class Day_D_Test {
     [Scenario]
     public void SolveTest(ScenarioContext scenario)
     {
