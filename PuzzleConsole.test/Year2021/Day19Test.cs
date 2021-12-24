@@ -18,52 +18,14 @@ public partial class Day19Test
             sut.Should().NotBeNull();
         });
 
-        scenario.Fact("Beacon Science", () =>
+        scenario.Fact("Beacons are the same", () =>
         {
-            var puzzle = new string[]
-            {
-                "--- scanner 0 ---",
-"-1,-1,1",
-"-2,-2,2",
-"-3,-3,3",
-"-2,-3,1",
-"5,6,-4",
-"8,0,7",
-"",
-"--- scanner 0 ---",
-"1,-1,1",
-"2,-2,2",
-"3,-3,3",
-"2,-1,3",
-"-5,4,-6",
-"-8,-7,0",
-"",
-"--- scanner 0 ---",
-"-1,-1,-1",
-"-2,-2,-2",
-"-3,-3,-3",
-"-1,-3,-2",
-"4,6,5",
-"-7,0,8",
-"",
-"--- scanner 0 ---",
-"1,1,-1",
-"2,2,-2",
-"3,3,-3",
-"1,3,-2",
-"-4,-6,5",
-"7,0,8",
-"",
-"--- scanner 0 ---",
-"1,1,1",
-"2,2,2",
-"3,3,3",
-"3,1,2",
-"-6,-4,-5",
-"0,7,-8",
+            var a = new Coordinates("1,-2,3");
+            var b = new Coordinates("1,-2,3");
 
-            };
+            a.Should().Be(b);
         });
+
 
         scenario.Fact("Find all beacons", () => {
             var puzzle = new string[]
@@ -209,6 +171,8 @@ public partial class Day19Test
             var solution = sut.Solve(puzzle);
 
             solution.First().Should().Be("79");
+
+            solution.Last().Should().Be("3621");
         });
     }
 }
