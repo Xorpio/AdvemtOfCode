@@ -1,4 +1,5 @@
 ﻿using PuzzleConsole.Year2021.Day22;
+using Spectre.Console;
 
 namespace PuzzleConsole.test.Year2021;
 
@@ -28,6 +29,43 @@ public partial class Day22Test {
             var solution = sut.Solve(puzzle);
 
             solution.First().Should().Be("39");
+        });
+
+        scenario.Fact("Example should match 2", () =>
+        {
+            var puzzle = new[] { "on x=1..2,y=1..2,z=1..2", "on x=0..1,y=0..1,z=0..1" };
+            var solution = sut.Solve(puzzle);
+            solution.First().Should().Be("15");
+        });
+
+        scenario.Fact("ExampleCube", () => {
+            var puzzle = new string[]
+            {
+                "on x=1..2,y=1..2,z=1..2",
+                "on x=3..4,y=1..2,z=1..2",
+                "on x=1..2,y=3..4,z=1..2",
+                "on x=3..4,y=3..4,z=1..2",
+                "on x=1..2,y=1..2,z=3..4",
+                "on x=3..4,y=1..2,z=3..4",
+                "on x=1..2,y=3..4,z=3..4",
+                "on x=3..4,y=3..4,z=3..4",
+
+                "off x=2..3,y=2..3,z=2..3",
+
+
+                "on x=0..1,y=0..1,z=0..1",
+                "on x=4..5,y=0..1,z=0..1",
+                "on x=0..1,y=4..5,z=0..1",
+                "on x=4..5,y=4..5,z=0..1",
+                "on x=0..1,y=0..1,z=4..5",
+                "on x=4..5,y=0..1,z=4..5",
+                "on x=0..1,y=4..5,z=4..5",
+                "on x=4..5,y=4..5,z=4..5",
+            };
+
+            var solution = sut.Solve(puzzle);
+
+            solution.First().Should().Be("112");
         });
 
         scenario.Fact("complexer puzzle with out of bounds", () => {
@@ -61,7 +99,7 @@ public partial class Day22Test {
 
             var solution = sut.Solve(puzzle);
 
-            solution.First().Should().Be("590784");
+            int.Parse(solution.First()).Should().Be(590784);
         });
 
         scenario.Fact("part 2 puzzle with out of bounds", () => {

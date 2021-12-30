@@ -1,3 +1,6 @@
+using System.ComponentModel;
+using Spectre.Console;
+
 namespace PuzzleConsole.Year2021.Day22;
 
 public class Day22 : ISolver
@@ -25,123 +28,154 @@ public class Day22 : ISolver
             .Reverse()
         );
         result = AppendAll(input);
-        var answer2 = result.Select(c => ((c.x.to - c.x.from) + 1) * ((c.y.to - c.y.from) + 1) * ((c.z.to - c.z.from) + 1))
+        var answer2 = result
+            .Select(c => new { x =  (decimal)(c.x.to - c.x.from) + 1, y = (decimal)(c.y.to - c.y.from) + 1, z = (decimal)(c.z.to - c.z.from) + 1})
+            .Select(c => c.x * c.y * c.z)
             .Sum();
 
         return new string[] { answer.ToString(), answer2.ToString() };
     }
 
-    private List<Cube> AppendAll(Stack<(bool on, FromTo x, FromTo y, FromTo z)> input)
+    public List<Cube> AppendAll(Stack<(bool on, FromTo x, FromTo y, FromTo z)> input)
     {
         var cubeList = new List<Cube>();
-        while (input.Any())
-        {
-            var line = input.Pop();
-
-            if (line.on)
+        var SplitInput = new Stack<(bool @on, FromTo x, FromTo y, FromTo z)>();
+        var current = input.Peek();
+        AnsiConsole.Status()
+            .Start("Working..,", ctx =>
             {
-                var cube = cubeList.FirstOrDefault(c => 
-                    (
-                    c.x.from.Between(line.x.from, line.x.to) ||
-                    c.x.to.Between(line.x.from, line.x.to) ||
-                    line.x.to.Between(c.x.to, c.x.from) ||
-                    line.x.from.Between(c.x.to, c.x.from)
-                    ) &&(
-                    c.y.from.Between(line.y.from, line.y.to) ||
-                    c.y.to.Between(line.y.from, line.y.to) ||
-                    line.y.to.Between(c.y.to, c.y.from) ||
-                    line.y.from.Between(c.y.to, c.y.from)
-                    ) &&(
-                    c.z.from.Between(line.z.from, line.z.to) ||
-                    c.z.to.Between(line.z.from, line.z.to) ||
-                    line.z.to.Between(c.z.to, c.z.from) ||
-                    line.z.from.Between(c.z.to, c.z.from)
-                    )
-                );
+                while (input.Any() || SplitInput.Any())
+                {
+                    if (input.Any())
+                    {
+                        current = input.Peek();
+                    }
 
-                if (cube == null)
-                {
-                    cubeList.Add(new Cube(line.x, line.y, line.z));
-                }
-                else
-                {
-                    if (line.x.from < cube.x.from)
+                    var status = $"Lines: {input.Count}, Cubes: {cubeList.Count}, working on {current}";
+                    ctx.Status(status);
+
+                    var line = SplitInput.Any() ? SplitInput.Pop() : input.Pop();
+
+                    if (line.on)
                     {
-                        input.Push(new(true, new FromTo(line.x.from, cube.x.from - 1), line.y, line.z));
-                        input.Push(new(true, new FromTo(cube.x.from, line.x.to), line.y, line.z));
-                    }
-                    else if (line.x.to > cube.x.to)
-                    {
-                        input.Push(new(true, new FromTo(line.x.from, cube.x.to), line.y, line.z));
-                        input.Push(new(true, new FromTo(cube.x.to + 1, line.x.to), line.y, line.z));
-                    }
-                    else if (line.y.from < cube.y.from)
-                    {
-                        input.Push(new(true, line.x, new FromTo(line.y.from, cube.y.from - 1), line.z));
-                        input.Push(new(true, line.x, new FromTo(cube.y.from, line.y.to), line.z));
-                    }
-                    else if (line.y.to > cube.y.to)
-                    {
-                        input.Push(new(true, line.x, new FromTo(line.y.from, cube.y.to), line.z));
-                        input.Push(new(true, line.x, new FromTo(cube.y.to + 1, line.y.to), line.z));
-                    }
-                    else if (line.z.from < cube.z.from)
-                    {
-                        input.Push(new(true, line.x, line.y, new FromTo(line.z.from, cube.z.from - 1)));
-                        input.Push(new(true, line.x, line.y, new FromTo(cube.z.from, line.z.to)));
-                    }
-                    else if (line.z.to > cube.z.to)
-                    {
-                        input.Push(new(true, line.x, line.y, new FromTo(line.z.from, cube.z.to)));
-                        input.Push(new(true, line.x, line.y, new FromTo(cube.z.to + 1, line.z.to)));
-                    }
-                    else if (
-                        line.x.from.Between(cube.x.from, cube.x.to) &&
-                        line.x.to.Between(cube.x.from, cube.x.to) &&
-                        line.y.from.Between(cube.y.from, cube.y.to) &&
-                        line.y.to.Between(cube.y.from, cube.y.to) &&
-                        line.z.from.Between(cube.z.from, cube.z.to) &&
-                        line.z.to.Between(cube.z.from, cube.z.to)
-                    ) {
-                        //do nothing. cube is in other on cube
+                        var cube = cubeList.FirstOrDefault(c =>
+                            (
+                                c.x.from.Between(line.x.from, line.x.to) ||
+                                c.x.to.Between(line.x.from, line.x.to) ||
+                                line.x.to.Between(c.x.from, c.x.to) ||
+                                line.x.from.Between(c.x.from, c.x.to)
+                            ) && (
+                                c.y.from.Between(line.y.from, line.y.to) ||
+                                c.y.to.Between(line.y.from, line.y.to) ||
+                                line.y.to.Between(c.y.from, c.y.to) ||
+                                line.y.from.Between(c.y.from, c.y.to)
+                            ) && (
+                                c.z.from.Between(line.z.from, line.z.to) ||
+                                c.z.to.Between(line.z.from, line.z.to) ||
+                                line.z.to.Between(c.z.from, c.z.to) ||
+                                line.z.from.Between(c.z.from, c.z.to)
+                            )
+                        );
+
+                        if (cube == null)
+                        {
+                            cubeList.Add(new Cube(line.x, line.y, line.z));
+                        }
+                        else
+                        {
+                            if (line.x.from < cube.x.from)
+                            {
+                                SplitInput.Push(new(true, new FromTo(line.x.from, cube.x.from - 1), line.y, line.z));
+                                SplitInput.Push(new(true, new FromTo(cube.x.from, line.x.to), line.y, line.z));
+                            }
+                            else if (line.x.to > cube.x.to)
+                            {
+                                SplitInput.Push(new(true, new FromTo(line.x.from, cube.x.to), line.y, line.z));
+                                SplitInput.Push(new(true, new FromTo(cube.x.to + 1, line.x.to), line.y, line.z));
+                            }
+                            else if (line.y.from < cube.y.from)
+                            {
+                                SplitInput.Push(new(true, line.x, new FromTo(line.y.from, cube.y.from - 1), line.z));
+                                SplitInput.Push(new(true, line.x, new FromTo(cube.y.from, line.y.to), line.z));
+                            }
+                            else if (line.y.to > cube.y.to)
+                            {
+                                SplitInput.Push(new(true, line.x, new FromTo(line.y.from, cube.y.to), line.z));
+                                SplitInput.Push(new(true, line.x, new FromTo(cube.y.to + 1, line.y.to), line.z));
+                            }
+                            else if (line.z.from < cube.z.from)
+                            {
+                                SplitInput.Push(new(true, line.x, line.y, new FromTo(line.z.from, cube.z.from - 1)));
+                                SplitInput.Push(new(true, line.x, line.y, new FromTo(cube.z.from, line.z.to)));
+                            }
+                            else if (line.z.to > cube.z.to)
+                            {
+                                SplitInput.Push(new(true, line.x, line.y, new FromTo(line.z.from, cube.z.to)));
+                                SplitInput.Push(new(true, line.x, line.y, new FromTo(cube.z.to + 1, line.z.to)));
+                            }
+                            else if (
+                                line.x.from.Between(cube.x.from, cube.x.to) &&
+                                line.x.to.Between(cube.x.from, cube.x.to) &&
+                                line.y.from.Between(cube.y.from, cube.y.to) &&
+                                line.y.to.Between(cube.y.from, cube.y.to) &&
+                                line.z.from.Between(cube.z.from, cube.z.to) &&
+                                line.z.to.Between(cube.z.from, cube.z.to)
+                            )
+                            {
+                                //do nothing. cube is in other on cube
+                            }
+                            else
+                                throw new Exception("mag niet komen");
+                        }
                     }
                     else
-                        throw new Exception("mag niet komen");
-                }
-            }
-            else
-            {
-                var cubes = cubeList.Where(c =>
-                    (
-                    c.x.from.Between(line.x.from, line.x.to) ||
-                    c.x.to.Between(line.x.from, line.x.to) ||
-                    line.x.to.Between(c.x.to, c.x.from) ||
-                    line.x.from.Between(c.x.to, c.x.from)
-                    ) && (
-                    c.y.from.Between(line.y.from, line.y.to) ||
-                    c.y.to.Between(line.y.from, line.y.to) ||
-                    line.y.to.Between(c.y.to, c.y.from) ||
-                    line.y.from.Between(c.y.to, c.y.from)
-                    ) && (
-                    c.z.from.Between(line.z.from, line.z.to) ||
-                    c.z.to.Between(line.z.from, line.z.to) ||
-                    line.z.to.Between(c.z.to, c.z.from) ||
-                    line.z.from.Between(c.z.to, c.z.from)
-                    )
-                ).ToList();
+                    {
+                        var cubes = cubeList.Where(c =>
+                            (
+                                c.x.from.Between(line.x.from, line.x.to) ||
+                                c.x.to.Between(line.x.from, line.x.to) ||
+                                line.x.to.Between(c.x.from, c.x.to) ||
+                                line.x.from.Between(c.x.from, c.x.to)
+                            ) && (
+                                c.y.from.Between(line.y.from, line.y.to) ||
+                                c.y.to.Between(line.y.from, line.y.to) ||
+                                line.y.to.Between(c.y.from, c.y.to) ||
+                                line.y.from.Between(c.y.from, c.y.to)
+                            ) && (
+                                c.z.from.Between(line.z.from, line.z.to) ||
+                                c.z.to.Between(line.z.from, line.z.to) ||
+                                line.z.to.Between(c.z.from, c.z.to) ||
+                                line.z.from.Between(c.z.from, c.z.to)
+                            )
+                        ).ToList();
 
-                foreach (var cube in cubes)
-                {
-                    cubeList.Remove(cube);
-                    cubeList.AddRange(RemoveCube(cube, line));
+                        foreach (var cube in cubes)
+                        {
+                            cubeList.Remove(cube);
+                            cubeList.AddRange(RemoveCube(cube, line));
+                        }
+                    }
                 }
-            }
-        }
-
+            });
         return cubeList;
+
     }
 
-    private IEnumerable<Cube> RemoveCube(Cube cube, (bool on, FromTo x, FromTo y, FromTo z) line)
+    private string ToScad(Cube cube)
+    {
+        return ToScad((true, cube.x, cube.y, cube.z));
+    }
+
+    private string ToScad((bool @on, FromTo x, FromTo y, FromTo z) line)
+    {
+        var scad = $"translate ([{line.x.from}, {line.y.from} ,{line.z.from}])";
+        scad += "{";
+        scad += $"cube([{(line.x.to - line.x.from) + 1}, {(line.y.to - line.y.from) + 1}, {(line.z.to - line.z.from) + 1}]);";
+        scad += "}";
+        return scad;
+    }
+
+    public IEnumerable<Cube> RemoveCube(Cube cube, (bool on, FromTo x, FromTo y, FromTo z) line)
     {
         var cubes = SplitX(new[] { cube }, line.x.from);
         cubes = SplitX(cubes, line.x.to + 1);
@@ -157,31 +191,31 @@ public class Day22 : ISolver
             (
             c.x.from.Between(line.x.from, line.x.to) ||
             c.x.to.Between(line.x.from, line.x.to) ||
-            line.x.to.Between(c.x.to, c.x.from) ||
-            line.x.from.Between(c.x.to, c.x.from)
+            line.x.to.Between(c.x.from, c.x.to) ||
+            line.x.from.Between(c.x.from, c.x.to)
             ) && (
             c.y.from.Between(line.y.from, line.y.to) ||
             c.y.to.Between(line.y.from, line.y.to) ||
-            line.y.to.Between(c.y.to, c.y.from) ||
-            line.y.from.Between(c.y.to, c.y.from)
+            line.y.to.Between(c.y.from, c.y.to) ||
+            line.y.from.Between(c.y.from, c.y.to)
             ) && (
             c.z.from.Between(line.z.from, line.z.to) ||
             c.z.to.Between(line.z.from, line.z.to) ||
-            line.z.to.Between(c.z.to, c.z.from) ||
-            line.z.from.Between(c.z.to, c.z.from)
+            line.z.to.Between(c.z.from, c.z.to) ||
+            line.z.from.Between(c.z.from, c.z.to)
             )
         );
 
         return ret;
     }
 
-    private IEnumerable<Cube> SplitZ(IEnumerable<Cube> cubes, int z)
+    public IEnumerable<Cube> SplitZ(IEnumerable<Cube> cubes, int z)
     {
         var splitCubes = new List<Cube>();
 
         foreach (var cube in cubes)
         {
-            if (!z.Between(cube.z.from, cube.z.to))
+            if (z == cube.z.from || !z.Between(cube.z.from, cube.z.to))
             {
                 splitCubes.Add(cube);
             }
@@ -195,13 +229,13 @@ public class Day22 : ISolver
         return splitCubes;
     }
 
-    private IEnumerable<Cube> SplitY(IEnumerable<Cube> cubes, int y)
+    public IEnumerable<Cube> SplitY(IEnumerable<Cube> cubes, int y)
     {
         var splitCubes = new List<Cube>();
 
         foreach (var cube in cubes)
         {
-            if (!y.Between(cube.y.from, cube.y.to))
+            if (y == cube.y.from || !y.Between(cube.y.from, cube.y.to))
             {
                 splitCubes.Add(cube);
             }
@@ -215,13 +249,13 @@ public class Day22 : ISolver
         return splitCubes;
     }
 
-    private IEnumerable<Cube> SplitX(IEnumerable<Cube> cubes, int x)
+    public IEnumerable<Cube> SplitX(IEnumerable<Cube> cubes, int x)
     {
         var splitCubes = new List<Cube>();
 
         foreach (var cube in cubes)
         {
-            if (!x.Between(cube.x.from, cube.x.to))
+            if (x == cube.x.from || !x.Between(cube.x.from, cube.x.to))
             {
                 splitCubes.Add(cube);
             }
@@ -235,7 +269,7 @@ public class Day22 : ISolver
         return splitCubes;
     }
 
-    private (bool on, FromTo x, FromTo y, FromTo z) ParseLine(string line)
+    public (bool on, FromTo x, FromTo y, FromTo z) ParseLine(string line)
     {
         var s = line.Split(' ');
         var on = (s[0] == "on");
