@@ -149,6 +149,24 @@ public partial class Day23Test {
             moves.Should().BeEquivalentTo(expexted);
         });
 
+        scenario.Fact("In hall and to cave is free to left", () =>
+        {
+            var game = new Game(new List<Amphipod>()
+            {
+            }, 0);
+
+            var start = new Location(9, 0);
+            var pod = new Amphipod(true, false, start, PodType.Amber);
+
+            var expexted = new List<Move>()
+            {
+                new Move(start, new Location(2,1), PodType.Amber),
+            };
+
+            var moves = pod.FindMoves(game);
+            moves.Should().BeEquivalentTo(expexted);
+        });
+
         for (int i = 1; i < 3; i++)
         {
             scenario.Theory("In hall and to cave is free but cave is ocupied", i, () =>
@@ -170,6 +188,39 @@ public partial class Day23Test {
                 moves.Should().BeEquivalentTo(expexted);
             });
         }
+
+        scenario.Fact("In cave but other pod is not correct", () =>
+        {
+            var game = new Game(new List<Amphipod>()
+            {
+                new Amphipod(false, false, new Location(7, 0), PodType.Amber),
+                new Amphipod(false, false, new Location(10, 0), PodType.Amber),
+                new Amphipod(false, false, new Location(8, 2), PodType.Amber)
+            }, 0);
+
+            var start = new Location(8, 1);
+            var pod = new Amphipod(false, false, start, PodType.Dessert);
+
+            var expexted = new List<Move>()
+            {
+                new Move(start, new Location(9,0), PodType.Dessert),
+            };
+
+            var moves = pod.FindMoves(game);
+            moves.Should().BeEquivalentTo(expexted);
+        });
+
+        scenario.Fact("One pod should be able to solve", () =>
+        {
+            var game = new Game(new List<Amphipod>()
+            {
+                new Amphipod(false, false, new Location(8, 2), PodType.Amber)
+            }, 0);
+
+
+            var solution = sut.SolveGame(game, new List<Move>());
+            solution.Should().Be(2);
+        });
 
         scenario.Fact("In hall and to cave is free but cave is ocupied by same type", () =>
         {

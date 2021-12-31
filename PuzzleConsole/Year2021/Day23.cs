@@ -8,7 +8,9 @@ public class Day23 : ISolver
 
     public string[] Solve(string[] puzzle)
     {
-        return puzzle;
+        var game = PuzzleToGame(puzzle);
+
+        return new string[] { SolveGame(game, new List<Move>()).ToString() };
     }
 
     public Game PuzzleToGame(string[] puzzle)
@@ -80,7 +82,7 @@ public class Day23 : ISolver
 
     public int SolveGame(Game game, List<Move> moves)
     {
-        if (game.Amphipods.All(p => p.MovedToCave))
+        if (game.Amphipods.All(p => p.MovedToCave || p.Location.Col == (int) p.Type))
         {
             return moves.Sum(m => m.Score);
         }
@@ -102,9 +104,9 @@ public class Day23 : ISolver
             pods.Remove(p);
             pods.Add(p with
             {
-                Location = move.to,
+                Location = move.To,
                 MovedToHall = true,
-                MovedToCave = move.to.Row > 0
+                MovedToCave = move.To.Row > 0
             });
 
             var m = new List<Move>(moves);
@@ -112,7 +114,7 @@ public class Day23 : ISolver
             var newGame = game with { Amphipods = pods };
 
             var newScore = SolveGame(newGame, m);
-            score = newScore > score ? score : newScore;
+            score = newScore < score ? newScore : score;
         }
 
         return score;
@@ -126,7 +128,7 @@ public record Amphipod(bool MovedToHall, bool MovedToCave, Location Location, Po
     public IEnumerable<Move> FindMoves(Game game)
     {
         var moves = new List<Move>();
-        if (Location.Col != (int)Type && !game.Amphipods.Any(p => p.Location.Col == (int)Type && p.Type != Type)) // and cave is empty from others
+        if (Location.Col != (int)Type || game.Amphipods.Any(p => p.Location.Col == (int)Type && p.Type != Type)) // and cave is empty from others
         {
             if (!MovedToHall && (Location.Row == 1 || !game.Amphipods.Any(p => p.Location.Row == 1 && p.Location.Col == Location.Col)))
             {
@@ -158,13 +160,13 @@ public record Amphipod(bool MovedToHall, bool MovedToCave, Location Location, Po
             else if (!MovedToCave && MovedToHall)
             {
                 if (Location.Col > (int)Type &&  //move to left
-                    !game.Amphipods.Any(p => p.Location.Row == 0 && p.Location.Col.Between((int)Type, Location.Col)) && //and the way is free
+                    !game.Amphipods.Any(p => p.Location.Row == 0 && p.Location.Col.Between((int)Type, Location.Col - 1)) && //and the way is free
                     !game.Amphipods.Any(p => p.Location.Col == (int)Type && p.Type != Type)) // and cave is empty from others
                 {
                     moves.Add(new Move(Location, new Location((int)Type, 1), Type));
                 }
                 if (Location.Col < (int)Type &&  //move to left
-                    !game.Amphipods.Any(p => p.Location.Row == 0 && p.Location.Col.Between(Location.Col, (int)Type)) && //and the way is free
+                    !game.Amphipods.Any(p => p.Location.Row == 0 && p.Location.Col.Between(Location.Col + 1, (int)Type)) && //and the way is free
                     !game.Amphipods.Any(p => p.Location.Col == (int)Type && p.Type != Type)) // and cave is empty from others
                 {
                     moves.Add(new Move(Location, new Location((int)Type, 1), Type));
@@ -178,13 +180,22 @@ public record Amphipod(bool MovedToHall, bool MovedToCave, Location Location, Po
 
 public record Location (int Col, int Row);
 
-public record Move(Location From, Location to, PodType Type)
+public record Move(Location From, Location To, PodType Type)
 {
     public int Score
     {
         get
         {
-            return 1;
+            var score = Math.Abs(From.Col - To.Col);
+            score += Math.Abs(From.Row - To.Row);
+            return Type switch 
+            {
+                PodType.Dessert => score * 1000,
+                PodType.Amber => score,
+                PodType.Copper => score * 100,
+                PodType.Bronze => score * 10,
+                _ => throw new NotSupportedException()
+            };
         }
     }
 };
