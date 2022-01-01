@@ -10,7 +10,7 @@ public class Day23 : ISolver
     {
         var game = PuzzleToGame(puzzle);
 
-        return new string[] { SolveGame(game, new List<Move>()).ToString() };
+        return new string[] { SolveGame(game).ToString() };
     }
 
     public Game PuzzleToGame(string[] puzzle)
@@ -80,48 +80,123 @@ public class Day23 : ISolver
         _ => throw new NotImplementedException()
     };
 
-    public int SolveGame(Game game, List<Move> moves)
+    public int SolveGame(Game game)
     {
-        if (game.Amphipods.All(p => p.MovedToCave || p.Location.Col == (int) p.Type))
+        var visited = new Dictionary<string, bool>();
+
+        var games = new Dictionary<string, (Game game, string via)>();
+
+        var queue = new PriorityQueue<Game, int>();
+
+        queue.Enqueue(game, 0);
+
+        var answer = int.MaxValue;
+
+        do
         {
-            return moves.Sum(m => m.Score);
-        }
-
-        var possibleMoves = new List<Move>();
-        //vind alle mogelijke acties
-        foreach (var pod in game.Amphipods)
-        {
-            possibleMoves.AddRange(pod.FindMoves(game));
-        }
-
-        var score = int.MaxValue;
-
-        foreach (var move in  possibleMoves)
-        {
-            var pods = new List<Amphipod>(game.Amphipods);
-
-            var p = pods.Find(p => p.Location == move.From);
-            pods.Remove(p);
-            pods.Add(p with
+            game = queue.Dequeue();
+            var moves = new List<Move>();
+            foreach (var pod in game.Amphipods)
             {
-                Location = move.To,
-                MovedToHall = true,
-                MovedToCave = move.To.Row > 0
-            });
+                moves.AddRange(pod.FindMoves(game));
+            }
 
-            var m = new List<Move>(moves);
-            m.Add(move);
-            var newGame = game with { Amphipods = pods };
+            foreach (var move in moves)
+            {
+                var newGame = game.ApplyMove(move);
 
-            var newScore = SolveGame(newGame, m);
-            score = newScore < score ? newScore : score;
-        }
+                if (newGame.IsSolved() && newGame.Score < answer)
+                {
+                    answer = newGame.Score;
+                }
 
-        return score;
+                games.TryAdd(newGame.ToString(), (newGame, game.ToString()));
+
+                if (games[newGame.ToString()].game.Score > newGame.Score)
+                {
+                    games[game.ToString()] = (newGame, game.ToString());
+                }
+
+                if (!visited.ContainsKey(game.ToString()))
+                {
+                    queue.Enqueue(newGame, newGame.Score + move.Score);
+                }
+            }
+
+            visited.TryAdd(game.ToString(), true); 
+        } while (queue.Count > 0);
+
+        return answer;
+    //    if (game.Amphipods.All(p => p.Location.Col == (int)p.Type))
+    //    {
+    //        return 0; //solved game
+    //    }
+
+    //    var scores = new Dictionary<Game, (int Score, bool Checked)>();
+    //    scores.Add(game, (0, false));
+    //    var movesToTry = new Stack<(Move, Game, int)>();
+    //    while (scores.Any(kv => kv.Value.Checked == false))
+    //    {
+    //        game = scores.First(kv => kv.Value.Checked == false).Key;
+
+    //        var score = scores[game].Score;
+
+    //        var moves = new List<Move>();
+    //        foreach (var pod in game.Amphipods)
+    //        {
+    //            moves.AddRange(pod.FindMoves(game));
+    //        }
+
+    //        foreach (var move in moves)
+    //        {
+    //            var newGame = game.ApplyMove(move);
+    //            scores.TryAdd(newGame, (int.MaxValue, false));
+    //            if (scores[newGame].Score > score + move.Score)
+    //            {
+    //                scores[newGame] = (score + move.Score, false);
+    //            }
+    //        }
+
+    //        scores[game] = (scores[game].Score, true);
+    //    }
+
+    //    return scores.Where(g => g.Key.Amphipods.All(p => p.Location.Col == (int)p.Type))
+    //        .MinBy(kv => kv.Value.Score).Value.Score;
     }
 }
 
-public record Game (List<Amphipod> Amphipods, int Score);
+public record Game(List<Amphipod> Amphipods, int Score)
+{
+    public Game ApplyMove(Move move)
+    {
+        var pods = new List<Amphipod>(Amphipods);
+
+        var p = pods.Find(p => p.Location == move.From);
+        pods.Remove(p);
+        pods.Add(p with
+        {
+            Location = move.To,
+            MovedToHall = true,
+            MovedToCave = move.To.Row > 0
+        });
+
+        var newGame = this with { Amphipods = pods, Score = Score + move.Score };
+        return newGame;
+    }
+
+    public bool IsSolved() => Amphipods.All(p => p.Location.Col == (int)p.Type);
+
+    public override string ToString()
+    {
+        var ret = "";
+        foreach(var pod in Amphipods.OrderBy(p => p.Location.Row).ThenBy(p => p.Location.Col))
+        {
+            ret += $"({pod.Type},{pod.Location.Row},{pod.Location.Col})";
+        }
+
+        return ret;
+    }
+}
 
 public record Amphipod(bool MovedToHall, bool MovedToCave, Location Location, PodType Type)
 {
@@ -163,13 +238,15 @@ public record Amphipod(bool MovedToHall, bool MovedToCave, Location Location, Po
                     !game.Amphipods.Any(p => p.Location.Row == 0 && p.Location.Col.Between((int)Type, Location.Col - 1)) && //and the way is free
                     !game.Amphipods.Any(p => p.Location.Col == (int)Type && p.Type != Type)) // and cave is empty from others
                 {
-                    moves.Add(new Move(Location, new Location((int)Type, 1), Type));
+                    var depth = game.Amphipods.Any(p => p.Location.Col == (int)Type && p.Location.Row == 2) ? 1 : 2;
+                    moves.Add(new Move(Location, new Location((int)Type, depth), Type));
                 }
                 if (Location.Col < (int)Type &&  //move to left
                     !game.Amphipods.Any(p => p.Location.Row == 0 && p.Location.Col.Between(Location.Col + 1, (int)Type)) && //and the way is free
                     !game.Amphipods.Any(p => p.Location.Col == (int)Type && p.Type != Type)) // and cave is empty from others
                 {
-                    moves.Add(new Move(Location, new Location((int)Type, 1), Type));
+                    var depth = game.Amphipods.Any(p => p.Location.Col == (int)Type && p.Location.Row == 2) ? 1 : 2;
+                    moves.Add(new Move(Location, new Location((int)Type, depth), Type));
                 }
             }
         }

@@ -67,7 +67,7 @@ public partial class Day23Test {
         {
             var game = sut.PuzzleToGame(puzzle);
 
-            var solution = sut.SolveGame(game, new List<Move>());
+            var solution = sut.SolveGame(game);
 
             solution.Should().Be(12521);
         });
@@ -142,7 +142,7 @@ public partial class Day23Test {
 
             var expexted = new List<Move>()
             {
-                new Move(start, new Location(8,1), PodType.Dessert),
+                new Move(start, new Location(8,2), PodType.Dessert),
             };
 
             var moves = pod.FindMoves(game);
@@ -160,7 +160,7 @@ public partial class Day23Test {
 
             var expexted = new List<Move>()
             {
-                new Move(start, new Location(2,1), PodType.Amber),
+                new Move(start, new Location(2,2), PodType.Amber),
             };
 
             var moves = pod.FindMoves(game);
@@ -218,8 +218,20 @@ public partial class Day23Test {
             }, 0);
 
 
-            var solution = sut.SolveGame(game, new List<Move>());
-            solution.Should().Be(2);
+            var solution = sut.SolveGame(game);
+            solution.Should().Be(10);
+        });
+        scenario.Fact("two pod should be able to solve andwalk deepest" , () =>
+        {
+            var game = new Game(new List<Amphipod>()
+            {
+                new Amphipod(false, false, new Location(8, 2), PodType.Amber),
+                new Amphipod(false, false, new Location(6, 2), PodType.Amber)
+            }, 0);
+
+
+            var solution = sut.SolveGame(game);
+            solution.Should().Be(17);
         });
 
         scenario.Fact("In hall and to cave is free but cave is ocupied by same type", () =>
@@ -227,7 +239,7 @@ public partial class Day23Test {
             var game = new Game(new List<Amphipod>()
             {
                 new Amphipod(false, false, new Location(1, 0), PodType.Amber),
-                new Amphipod(false, false, new Location(8, 1), PodType.Dessert)
+                new Amphipod(false, false, new Location(8, 2), PodType.Dessert)
             }, 0);
 
             var start = new Location(3, 0);
