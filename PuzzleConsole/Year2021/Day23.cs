@@ -8,14 +8,15 @@ public class Day23 : ISolver
 
     public string[] Solve(string[] puzzle)
     {
-        var game = PuzzleToGame(puzzle);
+        var games = PuzzleToGame(puzzle);
 
-        return new string[] { SolveGame(game).ToString() };
+        return new string[] { SolveGame(games[0]).ToString(), SolveGame(games[1]).ToString() };
     }
 
-    public Game PuzzleToGame(string[] puzzle)
+    public Game[] PuzzleToGame(string[] puzzle)
     {
-        List<Amphipod> pods = new List<Amphipod>();
+        var pods = new List<Amphipod>();
+        var podsPart2 = new List<Amphipod>();
 
         Location loc;
         PodType type;
@@ -31,44 +32,70 @@ public class Day23 : ISolver
         loc = new Location(col - 1, 1);
         type = PodTypeFromChar(line[col]);
         pods.Add(new Amphipod(false, false, loc, type));
+        podsPart2.Add(new Amphipod(false, false, loc, type));
 
         col += 2;
         loc = new Location(col - 1, 1);
         type = PodTypeFromChar(line[col]);
         pods.Add(new Amphipod(false, false, loc, type));
+        podsPart2.Add(new Amphipod(false, false, loc, type));
 
         col += 2;
         loc = new Location(col - 1, 1);
         type = PodTypeFromChar(line[col]);
         pods.Add(new Amphipod(false, false, loc, type));
+        podsPart2.Add(new Amphipod(false, false, loc, type));
 
         col += 2;
         loc = new Location(col - 1, 1);
         type = PodTypeFromChar(line[col]);
         pods.Add(new Amphipod(false, false, loc, type));
+        podsPart2.Add(new Amphipod(false, false, loc, type));
 
         line = puzzle[3];
         col = 3;
         loc = new Location(col - 1, 2);
+        var loc2 = new Location(col - 1, 4);
         type = PodTypeFromChar(line[col]);
         pods.Add(new Amphipod(false, false, loc, type));
+        podsPart2.Add(new Amphipod(false, false, loc2, type));
 
         col += 2;
         loc = new Location(col - 1, 2);
+        loc2 = new Location(col - 1, 4);
         type = PodTypeFromChar(line[col]);
         pods.Add(new Amphipod(false, false, loc, type));
+        podsPart2.Add(new Amphipod(false, false, loc2, type));
 
         col += 2;
         loc = new Location(col - 1, 2);
+        loc2 = new Location(col - 1, 4);
         type = PodTypeFromChar(line[col]);
         pods.Add(new Amphipod(false, false, loc, type));
+        podsPart2.Add(new Amphipod(false, false, loc2, type));
 
         col += 2;
         loc = new Location(col - 1, 2);
+        loc2 = new Location(col - 1, 4);
         type = PodTypeFromChar(line[col]);
         pods.Add(new Amphipod(false, false, loc, type));
+        podsPart2.Add(new Amphipod(false, false, loc2, type));
 
-        return new Game(pods, 0);
+        //  #D#C#B#A#
+        //  #D#B#A#C#
+        podsPart2.Add(new Amphipod(false, false, new Location(2, 2), PodType.Dessert));
+        podsPart2.Add(new Amphipod(false, false, new Location(2, 3), PodType.Dessert));
+
+        podsPart2.Add(new Amphipod(false, false, new Location(4, 2), PodType.Copper));
+        podsPart2.Add(new Amphipod(false, false, new Location(4, 3), PodType.Bronze));
+
+        podsPart2.Add(new Amphipod(false, false, new Location(6, 2), PodType.Bronze));
+        podsPart2.Add(new Amphipod(false, false, new Location(6, 3), PodType.Amber));
+
+        podsPart2.Add(new Amphipod(false, false, new Location(8, 2), PodType.Amber));
+        podsPart2.Add(new Amphipod(false, false, new Location(8, 3), PodType.Copper));
+
+        return new Game[] { new Game(pods, 0), new Game(podsPart2, 0) };
     }
 
     public PodType PodTypeFromChar(char c) => c switch
@@ -205,7 +232,7 @@ public record Amphipod(bool MovedToHall, bool MovedToCave, Location Location, Po
         var moves = new List<Move>();
         if (Location.Col != (int)Type || game.Amphipods.Any(p => p.Location.Col == (int)Type && p.Type != Type)) // and cave is empty from others
         {
-            if (!MovedToHall && (Location.Row == 1 || !game.Amphipods.Any(p => p.Location.Row == 1 && p.Location.Col == Location.Col)))
+            if (!MovedToHall && !game.Amphipods.Any(p => p.Location.Row < Location.Row && p.Location.Col == Location.Col))
             {
                 //try moving left
                 for (var i = Location.Col; i >= 0; i--)
@@ -238,14 +265,15 @@ public record Amphipod(bool MovedToHall, bool MovedToCave, Location Location, Po
                     !game.Amphipods.Any(p => p.Location.Row == 0 && p.Location.Col.Between((int)Type, Location.Col - 1)) && //and the way is free
                     !game.Amphipods.Any(p => p.Location.Col == (int)Type && p.Type != Type)) // and cave is empty from others
                 {
-                    var depth = game.Amphipods.Any(p => p.Location.Col == (int)Type && p.Location.Row == 2) ? 1 : 2;
+                    var depth = game.Amphipods.Where(p => p.Type == Type && p.Location.Col != (int)p.Type).Count();
                     moves.Add(new Move(Location, new Location((int)Type, depth), Type));
                 }
                 if (Location.Col < (int)Type &&  //move to left
                     !game.Amphipods.Any(p => p.Location.Row == 0 && p.Location.Col.Between(Location.Col + 1, (int)Type)) && //and the way is free
                     !game.Amphipods.Any(p => p.Location.Col == (int)Type && p.Type != Type)) // and cave is empty from others
                 {
-                    var depth = game.Amphipods.Any(p => p.Location.Col == (int)Type && p.Location.Row == 2) ? 1 : 2;
+                    //var depth = game.Amphipods.Any(p => p.Location.Col == (int)Type && p.Location.Row == 2) ? 1 : 2;
+                    var depth = game.Amphipods.Where(p => p.Type == Type && p.Location.Col != (int)p.Type).Count();
                     moves.Add(new Move(Location, new Location((int)Type, depth), Type));
                 }
             }
