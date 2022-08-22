@@ -12,6 +12,7 @@ public partial class Day23Test {
 
         scenario.Fact("Sut should not be null", () =>
         {
+            //var puzzle new
             sut.Should().NotBeNull();
         });
     }
