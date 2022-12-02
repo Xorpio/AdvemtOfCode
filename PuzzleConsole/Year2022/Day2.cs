@@ -24,16 +24,16 @@ public class Day2 : ISolver
     private int GetResult((string A, string B) input) => (input.A, input.B) switch
         {
             //rock
-            ("A", "X") => (2 + 0),
             ("A", "Y") => (1 + 3),
-            ("A", "Z") => (3 + 6),
+            ("A", "X") => (3 + 0),
+            ("A", "Z") => (2 + 6),
             //paper
-            ("B", "X") => (1 + 0),
             ("B", "Y") => (2 + 3),
+            ("B", "X") => (1 + 0),
             ("B", "Z") => (3 + 6),
             //scissors
-            ("C", "X") => (2 + 0),
             ("C", "Y") => (3 + 3),
+            ("C", "X") => (2 + 0),
             ("C", "Z") => (1 + 6),
             _ => throw new NotImplementedException()
         };
