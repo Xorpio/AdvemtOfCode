@@ -1,7 +1,8 @@
 ﻿using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using PuzzleConsole;
 
-namespace PuzzleConsole.Year2021.Day2;
+namespace Puz.Day1.Day1zleConsole.Year2021.Day2;
 
 public class Day2 : ISolver
 {
