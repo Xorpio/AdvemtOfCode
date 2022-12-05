@@ -64,5 +64,10 @@ public partial class Day5Test
         {
             sut.Solve(lines)[0].Should().Be("CMZ");
         });
+
+        scenario.Fact("Solve part 2", () =>
+        {
+            sut.Solve(lines)[1].Should().Be("MCD");
+        });
     }
 }

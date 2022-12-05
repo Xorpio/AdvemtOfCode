@@ -5,20 +5,27 @@ public class Day5 : ISolver
     public string[] Solve(string[] puzzle)
     {
         (var stacks, var inst) = SplitInput(puzzle);
+        (var stacks2, _) = SplitInput(puzzle);
 
-        var s = new Queue<Crate>();
+        var s1 = new Queue<Crate>();
+        var s2 = new Stack<Crate>();
         //perform instructions
         foreach (var instruction in inst)
         {
             //unstack
             for (int count = 0; count < instruction.Count; count++)
             {
-                s.Enqueue(stacks[instruction.From - 1].Pop());
+                s1.Enqueue(stacks[instruction.From - 1].Pop());
+                s2.Push(stacks2[instruction.From - 1].Pop());
             }
 
-            while (s.TryDequeue(out var c))
+            while (s1.TryDequeue(out var c))
             {
                 stacks[instruction.To - 1].Push(c);
+            }
+            while (s2.TryPop(out var c))
+            {
+                stacks2[instruction.To - 1].Push(c);
             }
         }
 
@@ -31,7 +38,17 @@ public class Day5 : ISolver
             }
         }
 
-        return new[] { res };
+        var res2 = "";
+        foreach (var stack2 in stacks2)
+        {
+            if (stack2.TryPeek(out var crate))
+            {
+                res2 += crate.Name;
+            }
+        }
+
+
+        return new[] { res, res2 };
     }
 
     public (IList<Stack<Crate>> Stacks, IList<Instruction> Instructions) SplitInput(string[] lines)
