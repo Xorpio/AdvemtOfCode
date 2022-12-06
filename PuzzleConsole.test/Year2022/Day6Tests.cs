@@ -15,5 +15,22 @@ public partial class Day6Tests
         {
             sut.Should().NotBeNull();
         });
+
+        var puzzles = new (string Puzzle, int Answer)[]
+        {
+            ("mjqjpqmgbljsphdztnvjfqwrcgsmlb", 7),
+            ("bvwbjplbgvbhsrlpgdmjqwftvncz", 5),
+            ("nppdvjthqldpwncqszvftbrmjlhg", 6),
+            ("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg", 10),
+            ("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw", 11),
+        };
+
+        foreach (var p in puzzles)
+        {
+            scenario.Theory("Puzzle should be solved", p, () =>
+            {
+                sut.Solve(new[] { p.Puzzle })[0].Should().Be(p.Answer.ToString());
+            });
+        }
     }
 }
