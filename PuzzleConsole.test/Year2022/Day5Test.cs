@@ -4,7 +4,7 @@ namespace PuzzleConsole.test.Year2022;
 
 [Trait("Year", "2022")]
 [Trait("Day", "5")]
-public partial class Day5Test
+public partial class Day5Tests
 {
     [Scenario]
     public void SolveTest(ScenarioContext scenario)
