@@ -29,5 +29,10 @@ public partial class Day8Test2022
         {
             int.Parse(sut.Solve(lines)[0]).Should().Be(21);
         });
+
+        scenario.Fact("Solve moet part 2", () =>
+        {
+            int.Parse(sut.Solve(lines)[1]).Should().Be(8);
+        });
     }
 }
