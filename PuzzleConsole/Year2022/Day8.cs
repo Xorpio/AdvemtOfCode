@@ -132,7 +132,7 @@ public class Day8 : ISolver
         }
 
         var seen = 0;
-        for (var yy = y - 1; yy > 0; yy--)
+        for (var yy = y - 1; yy >= 0; yy--)
         {
             if (grid[x, yy] < grid[x, y])
             {
