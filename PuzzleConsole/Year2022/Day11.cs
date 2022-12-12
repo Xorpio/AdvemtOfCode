@@ -102,6 +102,12 @@ public class Day11 : ISolver
         MonkeysPart1.Add(new Monkey(Name, TrueMonkey, FalseMonkey, Items, Test, Operation));
         MonkeysPart2.Add(new Monkey(Name, TrueMonkey, FalseMonkey, Items, Test, Operation));
 
+        double newMod = 1;
+        foreach(var monky in MonkeysPart2)
+        {
+            newMod = newMod * monky.Test;
+        }
+
         for (double i = 0; i < 20; i++)
         {
             foreach (var monkey in MonkeysPart1)
@@ -129,6 +135,7 @@ public class Day11 : ISolver
                 {
                     monkey.Inspections++;
                     item = monkey.Operation.Invoke(item);
+                    item = item % newMod;
 
                     var newMonkey = (item % monkey.Test == 0)
                         ? MonkeysPart2.First(m => m.Name.EndsWith(monkey.TrueMonkey))
