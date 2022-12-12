@@ -15,5 +15,43 @@ public partial class Day9Test2022
         {
             sut.Should().NotBeNull();
         });
+
+        var sampleInput = """
+        R 4
+        U 4
+        L 3
+        D 1
+        R 4
+        D 1
+        L 5
+        R 2
+        """;
+        var lines = sampleInput.Split("\n").Select(s => s.Trim()).ToArray();
+
+        scenario.Fact("Solve moet part 1", () =>
+        {
+            int.Parse(sut.Solve(lines)[0]).Should().Be(13);
+        });
+        scenario.Fact("Solve moet part 2", () =>
+        {
+            int.Parse(sut.Solve(lines)[1]).Should().Be(1);
+        });
+
+        var sampleInputPart2 = """
+        R 5
+        U 8
+        L 8
+        D 3
+        R 17
+        D 10
+        L 25
+        U 20
+        """;
+        var lines2 = sampleInputPart2.Split("\n").Select(s => s.Trim()).ToArray();
+
+        scenario.Fact("Solve moet part 2 larger example", () =>
+        {
+            int.Parse(sut.Solve(lines2)[1]).Should().Be(36);
+        });
     }
 }

@@ -6,12 +6,28 @@ public class Day9 : ISolver
 {
     public string[] Solve(string[] puzzle)
     {
-        var trail = new HashSet<Coord>();
+        var trailPart1 = new HashSet<Coord>();
+        var trailPart2 = new HashSet<Coord>();
 
         var head = new Coord(0, 0);
         var tail = head;
 
-        trail.Add(tail);
+        var knots = new Coord[]
+        {
+            new Coord(0,0),
+            new Coord(0,0),
+            new Coord(0,0),
+            new Coord(0,0),
+            new Coord(0,0),
+            new Coord(0,0),
+            new Coord(0,0),
+            new Coord(0,0),
+            new Coord(0,0),
+            new Coord(0,0),
+        };
+
+        trailPart1.Add(tail);
+        trailPart2.Add(knots[9]);
 
         foreach (var instruction in puzzle)
         {
@@ -26,7 +42,15 @@ public class Day9 : ISolver
                     {
                         head = head with { X = head.X + 1 };
                         tail = FollowHead(head, tail);
-                        trail.Add(tail);
+                        trailPart1.Add(tail);
+
+                        knots[0] = knots[0] with { X = knots[0].X + 1 };
+                        for (var index = 1; index < knots.Length; index++)
+                        {
+                            knots[index] = FollowHead(knots[index - 1], knots[index]);
+                        }
+                        trailPart2.Add(knots[9]);
+
                         ammount--;
                     }
                     break;
@@ -36,7 +60,15 @@ public class Day9 : ISolver
                     {
                         head = head with { Y = head.Y + 1 };
                         tail = FollowHead(head, tail);
-                        trail.Add(tail);
+                        trailPart1.Add(tail);
+
+                        knots[0] = knots[0] with { Y = knots[0].Y + 1 };
+                        for (var index = 1; index < knots.Length; index++)
+                        {
+                            knots[index] = FollowHead(knots[index - 1], knots[index]);
+                        }
+                        trailPart2.Add(knots[9]);
+
                         ammount--;
                     }
                     break;
@@ -46,7 +78,15 @@ public class Day9 : ISolver
                     {
                         head = head with { Y = head.Y - 1 };
                         tail = FollowHead(head, tail);
-                        trail.Add(tail);
+                        trailPart1.Add(tail);
+
+                        knots[0] = knots[0] with { Y = knots[0].Y - 1 };
+                        for (var index = 1; index < knots.Length; index++)
+                        {
+                            knots[index] = FollowHead(knots[index - 1], knots[index]);
+                        }
+                        trailPart2.Add(knots[9]);
+
                         ammount--;
                     }
                     break;
@@ -56,7 +96,15 @@ public class Day9 : ISolver
                     {
                         head = head with { X = head.X - 1 };
                         tail = FollowHead(head, tail);
-                        trail.Add(tail);
+                        trailPart1.Add(tail);
+
+                        knots[0] = knots[0] with { X = knots[0].X - 1 };
+                        for (var index = 1; index < knots.Length; index++)
+                        {
+                            knots[index] = FollowHead(knots[index - 1], knots[index]);
+                        }
+
+                        trailPart2.Add(knots[9]);
                         ammount--;
                     }
                     break;
@@ -64,9 +112,12 @@ public class Day9 : ISolver
                 default:
                     throw new Exception($"Case {instruction}");
             }
+
+            trailPart1.Add(tail);
+            trailPart2.Add(knots[9]);
         }
 
-        return new[] { trail.Count().ToString() };
+        return new[] { trailPart1.Count().ToString(), trailPart2.Count().ToString() };
     }
 
     private Coord FollowHead(Coord head, Coord tail)
