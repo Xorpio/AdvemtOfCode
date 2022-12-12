@@ -52,5 +52,10 @@ public partial class Day11Test2022
         {
             int.Parse(sut.Solve(lines)[0]).Should().Be(10605);
         });
+
+        scenario.Fact("Small sample test part 2", () =>
+        {
+            sut.Solve(lines)[1].Should().Be("2713310158");
+        });
     }
 }
