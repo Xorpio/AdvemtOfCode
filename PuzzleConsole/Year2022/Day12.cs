@@ -24,84 +24,52 @@ public class Day12 : ISolver
         var start = maze.FirstOrDefault(c => c.Value == 'S').Key;
         var end = maze.FirstOrDefault(c => c.Value == 'E').Key;
 
-        var first = new HashSet<Coords>();
-        first.Add(start);
+        var part1 = FindPath(start, end);
 
-        return new[] { FindPath(first, end).ToString() };
-
-        // while (attempts.TryDequeue(out var set))
-        // {
-        //     var last = set.Last();
-        //     //north
-        //     var north = last with { row = last.row - 1 };
-        //     if (TryAddAttempt(maze, north, last, set, attempts))
-        //     {
-        //         return new string[] { (set.Count).ToString() };
-        //     }
-        //
-        //     var east = last with { col = last.col + 1 };
-        //     if(TryAddAttempt(maze, east, last, set, attempts))
-        //     {
-        //         return new string[] { (set.Count).ToString() };
-        //     }
-        //
-        //     var south = last with { row = last.row + 1 };
-        //     if(TryAddAttempt(maze, south, last, set, attempts))
-        //     {
-        //         return new string[] { (set.Count).ToString() };
-        //     }
-        //
-        //     var west = last with { col = last.col - 1 };
-        //     if(TryAddAttempt(maze, west, last, set, attempts))
-        //     {
-        //         return new string[] { (set.Count).ToString() };
-        //     }
-        //
-        //     Console.WriteLine($"Set: {set.Count} -  Cycle: {count}");
-        //
-        //     count++;
-        // }
-
+        return new[] { part1.ToString() };
     }
 
-    public int FindPath(HashSet<Coords> path, Coords end)
+    private int FindPath(Coords start, Coords end)
     {
-        var last = path.Last();
+        var visited = new Dictionary<Coords, int>();
+        var potential = new List<(Coords c, int Steps)>();
 
-        Console.WriteLine ($"Depth: {path.Count}, {last}");
+        potential.Add(new(start, 0));
 
-        var newCoords = new Coords[]
+        while (potential.Any())
         {
-            last with { row = last.row - 1 },
-            last with { col = last.col + 1 },
-            last with { row = last.row + 1 },
-            last with { col = last.col - 1 },
-        };
+            var current = potential.OrderBy(i => i.Steps + (i.c + end))
+                .First();
+            potential.Remove(current);
 
-        newCoords = newCoords.OrderBy(a => a + end).ToArray();
-
-        var results = new HashSet<int>();
-        foreach (var cord in newCoords)
-        {
-            var newset = new HashSet<Coords>(path);
-            if (TryAddAttempt(cord, last, newset))
+            if (current.c == end)
             {
-                if (cord == end)
-                {
-                    return newset.Count - 1;
-                }
-
-                var res = FindPath(newset, end);
-
-                if (res < int.MaxValue)
-                    return res;
+                return current.Steps;
             }
+
+            if (!visited.TryAdd(current.c, current.Steps))
+            {
+                continue;
+            }
+
+            var directions = new List<Coords>()
+            {
+                current.c with { row = current.c.row - 1 },
+                current.c with { col = current.c.col + 1 },
+                current.c with { row = current.c.row + 1 },
+                current.c with { col = current.c.col - 1 }
+            };
+
+            potential.AddRange(directions
+                .Where(d => !visited.ContainsKey(d))
+                .Where(d => TryAddAttempt(d, current.c))
+                .Select(d => (d, current.Steps + 1)));
         }
 
-        return int.MaxValue;
+        throw new Exception("No path found");
     }
 
-    private bool TryAddAttempt(Coords newCoords, Coords last, HashSet<Coords> set)
+    private bool TryAddAttempt(Coords newCoords, Coords last)
     {
         if (!maze.ContainsKey(newCoords))
         {
@@ -110,7 +78,7 @@ public class Day12 : ISolver
 
         if ((GetVal(maze[last]) + 1) >= GetVal(maze[newCoords]))
         {
-            return set.Add(newCoords);
+            return true;
         }
 
         return false;

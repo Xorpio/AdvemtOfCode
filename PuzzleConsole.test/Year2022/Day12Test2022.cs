@@ -30,16 +30,5 @@ public partial class Day12Test2022
         {
             int.Parse(sut.Solve(lines)[0]).Should().Be(31);
         });
-
-        scenario.Fact("Small test", () =>
-        {
-            var a = new Coords(1, 2);
-            var b = new Coords(0, 1);
-            var e = new Coords(10, 1);
-
-            (a + e).Should().Be(9);
-            (b + e).Should().Be(10);
-        });
-
     }
 }
