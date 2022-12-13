@@ -19,14 +19,21 @@ public class Day12 : ISolver
             }
         }
 
-        var attempts = new Queue<HashSet<Coords>>();
-
         var start = maze.FirstOrDefault(c => c.Value == 'S').Key;
         var end = maze.FirstOrDefault(c => c.Value == 'E').Key;
 
         var part1 = FindPath(start, end);
 
-        return new[] { part1.ToString() };
+        var starts = maze.Where(c => c.Value == 'a');
+
+        return new[]
+        {
+            part1.ToString(),
+            starts.Select(s => FindPath(s.Key, end))
+                .OrderBy(c => c)
+                .First()
+                .ToString()
+        };
     }
 
     private int FindPath(Coords start, Coords end)
@@ -66,7 +73,7 @@ public class Day12 : ISolver
                 .Select(d => (d, current.Steps + 1)));
         }
 
-        throw new Exception("No path found");
+        return int.MaxValue;
     }
 
     private bool TryAddAttempt(Coords newCoords, Coords last)
