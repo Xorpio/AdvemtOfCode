@@ -10,6 +10,7 @@ public class Day13 : ISolver
     {
         var comparer = new packetComparer();
         var results = new List<bool>();
+        var all = new List<Packet>();
         for (var index = 0; index < puzzle.Length; index+= 3)
         {
             var line1 = puzzle[index];
@@ -19,10 +20,21 @@ public class Day13 : ISolver
             var p2 = ToPacket(line2);
 
             var list = new List<Packet>() { p1, p2 };
+            all.AddRange(list);
             list.Sort(comparer);
 
             results.Add(list[0] == p1);
         }
+
+        var div1 = ToPacket("[[2]]");
+        var div2 = ToPacket("[[6]]");
+
+        all.Add(div1);
+        all.Add(div2);
+
+        all.Sort(comparer);
+
+        var answer2 = (all.IndexOf(div1) + 1) * (all.IndexOf(div2) + 1);
 
         var answer = 0;
         for (var index = 0; index < results.Count; index++)
@@ -34,7 +46,7 @@ public class Day13 : ISolver
             }
         }
 
-        return new string[] { answer.ToString() };
+        return new string[] { answer.ToString(), answer2.ToString() };
     }
 
     public Packet ToPacket(string line)
