@@ -1,4 +1,5 @@
 using System.Globalization;
+using Spectre.Console;
 
 namespace PuzzleConsole.Year2022.Day9;
 
@@ -117,11 +118,52 @@ public class Day9 : ISolver
             trailPart2.Add(knots[9]);
         }
 
+        //visualize Part1
+        var maxX = trailPart2.Select(r => r.X)
+            .Max() + 2;
+        var maxY = trailPart2.Select(r => r.Y)
+            .Max() + 2;
+        var minX = trailPart2.Select(r => r.X)
+            .Min();
+        var minY = trailPart2.Select(r => r.Y)
+            .Min();
+
+        var canvas = new Canvas(maxX - minX, maxY - minY);
+
+        foreach (var s in trailPart2)
+        {
+            Draw(s.X, s.Y, Color.Yellow, canvas, minX, minY);
+        }
+
+        AnsiConsole.Write(canvas);
+
         return new[] { trailPart1.Count().ToString(), trailPart2.Count().ToString() };
     }
 
-    private Coord FollowHead(Coord head, Coord tail)
+    public void Draw(int x, int y, Color color, Canvas canvas, int minX, int minY)
     {
+        x = x + (minX * -1) + 1;
+        y = y + (minY * -1) + 1;
+        canvas.SetPixel(x, y, color);
+    }
+    public Coord FollowHead(Coord head, Coord tail)
+    {
+        if (head.X > tail.X + 1 && head.Y > tail.Y + 1)
+        {
+            return head with { X = head.X - 1, Y = head.Y - 1 };
+        }
+        if (head.X > tail.X + 1 && head.Y < tail.Y - 1)
+        {
+            return head with { X = head.X - 1, Y = head.Y + 1 };
+        }
+        if (head.X < tail.X - 1 && head.Y > tail.Y + 1)
+        {
+            return head with { X = head.X + 1, Y = head.Y - 1 };
+        }
+        if (head.X < tail.X - 1 && head.Y < tail.Y - 1)
+        {
+            return head with { X = head.X + 1, Y = head.Y + 1 };
+        }
         if (head.X > tail.X + 1)
         {
             return head with { X = head.X - 1 };

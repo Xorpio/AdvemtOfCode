@@ -53,5 +53,49 @@ public partial class Day9Test2022
         {
             int.Parse(sut.Solve(lines2)[1]).Should().Be(36);
         });
+
+        var tests = new (Coord Head, Coord Tail, Coord Expected)[]
+        {
+            //rechts
+            (new(0,0), new (0,0), new(0,0)),
+            (new(0,1), new (0,0), new(0,0)),
+            (new(0,2), new (0,0), new(0,1)),
+            //links
+            (new(0,0), new (0,0), new(0,0)),
+            (new(0,-1), new (0,0), new(0,0)),
+            (new(0,-2), new (0,0), new(0,-1)),
+            //boven
+            (new(0,0), new (0,0), new(0,0)),
+            (new(1,0), new (0,0), new(0,0)),
+            (new(2,0), new (0,0), new(1,0)),
+            //beneden
+            (new(0,0), new (0,0), new(0,0)),
+            (new(-1,0), new (0,0), new(0,0)),
+            (new(-2,0), new (0,0), new(-1,0)),
+            //rechytsboven
+            (new(0,0), new (0,0), new(0,0)),
+            (new(1,1), new (0,0), new(0,0)),
+            (new(2,2), new (0,0), new(1,1)),
+            //rechtsonder
+            (new(0,0), new (0,0), new(0,0)),
+            (new(1,-1), new (0,0), new(0,0)),
+            (new(2,-2), new (0,0), new(1,-1)),
+            //rechytsboven
+            (new(0,0), new (0,0), new(0,0)),
+            (new(-1,1), new (0,0), new(0,0)),
+            (new(-2,2), new (0,0), new(-1,1)),
+            //rechytsboven
+            (new(0,0), new (0,0), new(0,0)),
+            (new(-1,-1), new (0,0), new(0,0)),
+            (new(-2,-2), new (0,0), new(-1,-1)),
+        };
+
+        foreach (var t in tests)
+        {
+            scenario.Theory("Test coord", t, () =>
+            {
+                sut.FollowHead(t.Head, t.Tail).Should().Be(t.Expected);
+            });
+        }
     }
 }
