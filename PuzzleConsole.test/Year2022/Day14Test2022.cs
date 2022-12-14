@@ -1,17 +1,19 @@
-﻿using PuzzleConsole.Year_Y_.Day_D_;
+﻿using PuzzleConsole.Year2022.Day14;
 
-namespace PuzzleConsole.test.Year_Y_;
+namespace PuzzleConsole.test.Year2022;
 
-[Trait("Year", "_Y_")]
-[Trait("Day", "_D_")]
-public partial class Day_D_Test_Y_ {
+[Trait("Year", "2022")]
+[Trait("Day", "14")]
+public partial class Day14Test2022
+{
     [Scenario]
     public void SolveTest(ScenarioContext scenario)
     {
-        var sut = new Day_D_();
+        var sut = new Day14();
 
         var sampleInput = """
-        SampleInput
+        498,4 -> 498,6 -> 496,6
+        503,4 -> 502,4 -> 502,9 -> 494,9
         """;
         var lines = sampleInput.Split("\n").Select(s => s.Trim()).ToArray();
 
@@ -22,7 +24,7 @@ public partial class Day_D_Test_Y_ {
 
         scenario.Fact("Small sample test", () =>
         {
-            sut.Solve(lines)[0].Should().Be(lines[0]);
+            int.Parse(sut.Solve(lines)[0]).Should().Be(24);
         });
     }
 }
