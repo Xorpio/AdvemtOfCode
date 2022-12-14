@@ -5,14 +5,16 @@ namespace PuzzleConsole.Year2022.Day14;
 public class Day14 : ISolver
 {
     private HashSet<Coord> _rock;
-    private HashSet<Coord> _sand;
+    private HashSet<Coord> _sandPart1;
+    private HashSet<Coord> _sandPart2;
     private int _lowest;
 
     public string[] Solve(string[] puzzle)
     {
         _lowest = 500;
         _rock = new HashSet<Coord>();
-        _sand = new HashSet<Coord>();
+        _sandPart1 = new HashSet<Coord>();
+        _sandPart2 = new HashSet<Coord>();
 
         //constuct maze
         foreach (var line in puzzle)
@@ -73,13 +75,23 @@ public class Day14 : ISolver
         Coord unit = null;
         do
         {
-            unit = FallNewUnit();
+            unit = FallNewUnitPart1();
 
             if (unit is not null)
             {
-                _sand.Add(unit);
+                _sandPart1.Add(unit);
             }
         } while (unit is not null);
+
+        do
+        {
+            unit = FallNewUnitPart2();
+
+            if (unit is not null)
+            {
+                _sandPart2.Add(unit);
+            }
+        } while (unit.y > 0);
 
 
         //visualize Part1
@@ -103,7 +115,7 @@ public class Day14 : ISolver
             canvas.SetPixel(canvas.Width - 1, i, Color.Green);
         }
 
-        foreach (var s in _sand)
+        foreach (var s in _sandPart1)
         {
             Draw(s.x, s.y, Color.Yellow, canvas, minX, maxX, minY, maxY);
         }
@@ -117,7 +129,7 @@ public class Day14 : ISolver
 
         AnsiConsole.Write(canvas);
 
-        return new string[] { _sand.Count.ToString() };
+        return new string[] { _sandPart1.Count.ToString(),_sandPart2.Count.ToString() };
     }
 
     public void Draw(int x, int y, Color color, Canvas canvas, int minX, int maxX, int minY, int maxY)
@@ -125,7 +137,7 @@ public class Day14 : ISolver
         canvas.SetPixel(x - minX, y, color);
     }
 
-    private Coord? FallNewUnit()
+    private Coord? FallNewUnitPart1()
     {
         var unit = new Coord(500, 0);
 
@@ -133,15 +145,15 @@ public class Day14 : ISolver
         while (next)
         {
             //check down
-            if (!_rock.Contains(unit with { y = unit.y + 1 }) && !_sand.Contains(unit with { y = unit.y + 1 }))
+            if (!_rock.Contains(unit with { y = unit.y + 1 }) && !_sandPart1.Contains(unit with { y = unit.y + 1 }))
             {
                 unit = unit with { y = unit.y + 1 };
             }
-            else if (!_rock.Contains(unit with { y = unit.y + 1, x = unit.x - 1 }) && !_sand.Contains(unit with { y = unit.y + 1, x = unit.x - 1 }))
+            else if (!_rock.Contains(unit with { y = unit.y + 1, x = unit.x - 1 }) && !_sandPart1.Contains(unit with { y = unit.y + 1, x = unit.x - 1 }))
             {
                 unit = unit with { y = unit.y + 1 , x = unit.x - 1};
             }
-            else if (!_rock.Contains(unit with { y = unit.y + 1, x = unit.x + 1 }) && !_sand.Contains(unit with { y = unit.y + 1, x = unit.x + 1 }))
+            else if (!_rock.Contains(unit with { y = unit.y + 1, x = unit.x + 1 }) && !_sandPart1.Contains(unit with { y = unit.y + 1, x = unit.x + 1 }))
             {
                 unit = unit with { y = unit.y + 1 , x = unit.x + 1};
             }
@@ -153,6 +165,37 @@ public class Day14 : ISolver
             if (unit.y > _lowest)
             {
                 return null;
+            }
+        }
+
+        return unit;
+    }
+
+    private Coord? FallNewUnitPart2()
+    {
+        var unit = new Coord(500, 0);
+
+        var floor = _lowest;
+
+        var next = true;
+        while (next)
+        {
+            //check down
+            if (!_rock.Contains(unit with { y = unit.y + 1 }) && !_sandPart2.Contains(unit with { y = unit.y + 1 }) && unit.y < floor)
+            {
+                unit = unit with { y = unit.y + 1 };
+            }
+            else if (!_rock.Contains(unit with { y = unit.y + 1, x = unit.x - 1 }) && !_sandPart2.Contains(unit with { y = unit.y + 1, x = unit.x - 1 }) && unit.y < floor)
+            {
+                unit = unit with { y = unit.y + 1 , x = unit.x - 1};
+            }
+            else if (!_rock.Contains(unit with { y = unit.y + 1, x = unit.x + 1 }) && !_sandPart2.Contains(unit with { y = unit.y + 1, x = unit.x + 1 }) && unit.y < floor)
+            {
+                unit = unit with { y = unit.y + 1 , x = unit.x + 1};
+            }
+            else
+            {
+                next = false;
             }
         }
 
