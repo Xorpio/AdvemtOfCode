@@ -44,6 +44,12 @@ public partial class Day20Test2022 {
             sut.Solve(lines)[0].Should().Be("3");
         });
 
+        scenario.Fact("Small sample test part 2", () =>
+        {
+            // sut.Solve(lines).Should().BeEquivalentTo(answers);
+            sut.Solve(lines)[1].Should().Be("1623178306");
+        });
+
         // var tests = new (string, string)[]
         // {
         //     ("1,0,0",  "0, 1, 0"),
