@@ -39,5 +39,10 @@ public partial class Day21Test2022
         {
             sut.Solve(lines)[0].Should().Be("152");
         });
+
+        scenario.Fact("Part 2", () =>
+        {
+            sut.Solve(lines)[1].Should().Be("301");
+        });
     }
 }
