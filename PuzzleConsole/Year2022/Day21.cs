@@ -12,15 +12,82 @@ public class Day21 : ISolver
 
         var part1 = monkeys["root"].Call(monkeys).ToString();
 
-        monkeys = null;
-
-        monkeys = puzzle.Select(l => new Monkey(l))
-            .ToDictionary(m => m.Name);
-
         monkeys["root"] = new Monkey($"root: {monkeys["root"]._operation[1]} = {monkeys["root"]._operation[3]}");
-        monkeys["humn"] = new Monkey("humn: x");
 
-        var part2 = monkeys["root"].Call(monkeys).ToString();
+        double answer = 0;
+        double min = 1e20 * -1;
+        double max = 1e20;
+        double guess = 0;
+        var guesses = new double[3];
+        for(int i = 0; i < 1; i++)
+        {
+            switch (i)
+            {
+                case 0:
+                    guess = min;
+                    break;
+                case 1:
+                    guess = 0;
+                    break;
+                case 2:
+                    guess = max;
+                    break;
+            }
+
+            foreach (var keyValuePair in monkeys)
+            {
+                keyValuePair.Value._answer = null;
+            }
+            monkeys["humn"] = new Monkey($"humn: {guess}");
+
+            guesses[i] = monkeys["root"].Call(monkeys);
+
+        }
+
+        string part2 = "";
+        do
+        {
+            foreach (var keyValuePair in monkeys)
+            {
+                keyValuePair.Value._answer = null;
+            }
+            monkeys["humn"] = new Monkey($"humn: {guess}");
+
+            answer = monkeys["root"].Call(monkeys);
+
+            if (answer == 0)
+            {
+                part2 = guess.ToString();
+            }
+
+            Console.WriteLine($"Gues: {guess}, answer: {answer}, min:{min}, max:{max}");
+            //guess to low
+            if (answer > 0)
+            {
+                if (guesses[0] > 0)
+                {
+                    min += Math.Abs(min - max) / 2;
+                }
+                else
+                {
+                    max -= Math.Abs(min - max) / 2;
+                }
+            }
+            //guess to high
+            else
+            {
+                if (guesses[0] > 0)
+                {
+                    max -= Math.Abs(min - max) / 2;
+                }
+                else
+                {
+                    min += Math.Abs(min - max) / 2;
+                }
+            }
+
+            guess = Math.Round((min + max) / 2);
+        } while (part2 == "");
 
         return new string[]
         {
@@ -49,7 +116,7 @@ public class Monkey
         }
     }
 
-    private double? _answer = null;
+    public double? _answer = null;
 
     public string Name => _operation[0][..^1];
 
@@ -57,6 +124,15 @@ public class Monkey
 
     public double Call(Dictionary<string, Monkey> monkeys)
     {
+        try
+        {
+            _answer = double.Parse(_operation[1]);
+        }
+        catch (Exception)
+        {
+
+        }
+
         if (_answer == null)
         {
             double? monkey1 = null;
