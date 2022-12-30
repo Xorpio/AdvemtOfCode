@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Security;
 using Spectre.Console;
 
@@ -24,10 +25,12 @@ public class Day22 : ISolver
 
         var instructions = puzzle[^1];
 
-        var pos = map
+        var posPart1 = map
             .First().Key;
+        var posPart2 = posPart1;
 
-        var facing = Compass.Right;
+        var facingPart1 = Compass.Right;
+        var facingPart2 = Compass.Right;
         //
         // var canvas = new Canvas(
         //     map.Keys.Select(k => k.col).Max() + 1,
@@ -52,8 +55,10 @@ public class Day22 : ISolver
                 case 'R':
                 case 'L':
                     // pos = walk(int.Parse(numBuff), map, pos, facing, ctx, canvas);
-                    pos = walk(int.Parse(numBuff), map, pos, facing);
-                    facing = turn(i, facing);
+                    (posPart1, facingPart1) = walk(int.Parse(numBuff), map, posPart1, facingPart1, true);
+                    (posPart2, facingPart2) = walk(int.Parse(numBuff), map, posPart2, facingPart2, false);
+                    facingPart1 = turn(i, facingPart1);
+                    facingPart2 = turn(i, facingPart2);
                     numBuff = "";
                     break;
                 default:
@@ -65,11 +70,13 @@ public class Day22 : ISolver
         if (!string.IsNullOrEmpty(numBuff))
         {
             // pos = walk(int.Parse(numBuff), map, pos, facing, ctx, canvas);
-            pos = walk(int.Parse(numBuff), map, pos, facing);
+            (posPart1, facingPart1) = walk(int.Parse(numBuff), map, posPart1, facingPart1, true);
+            (posPart2, facingPart2) = walk(int.Parse(numBuff), map, posPart2, facingPart2, false);
         }
         // });
 
-        var part1 = (pos.row * 1000) + (pos.col * 4) + (int)facing;
+        var part1 = (posPart1.row * 1000) + (posPart1.col * 4) + (int)facingPart1;
+        var part2 = (posPart2.row * 1000) + (posPart2.col * 4) + (int)facingPart2;
 
         var rline = "";
         for (int row = 1; row < map.Keys.Select(k => k.row).Max(); row++)
@@ -88,7 +95,8 @@ public class Day22 : ISolver
 
         return new[]
         {
-            part1.ToString()
+            part1.ToString(),
+            part2.ToString()
         };
     }
 
@@ -101,8 +109,9 @@ public class Day22 : ISolver
     };
 
     // private Coord walk(int steps, Dictionary<Coord, char> map, Coord pos, Compass facing, LiveDisplayContext ctx, Canvas canvas)
-    private Coord walk(int steps, Dictionary<Coord, char> map, Coord pos, Compass facing)
+    private (Coord, Compass) walk(int steps, Dictionary<Coord, char> map, Coord pos, Compass facing, bool isPart1)
     {
+        Compass newFacing = facing;
         while (steps > 0)
         {
             // canvas.SetPixel(pos.col, pos.row, Color.Green);
@@ -118,24 +127,33 @@ public class Day22 : ISolver
             //wrap arround
             if (!map.ContainsKey(newPos))
             {
-                switch (facing)
+                if (isPart1)
                 {
-                    case Compass.Right:
-                        var rowi = map.Keys.Where(k => k.row == pos.row);
-                        newPos = rowi.MinBy(r => r.col);
-                        break;
-                    case Compass.Left:
-                        var rowm = map.Keys.Where(k => k.row == pos.row);
-                        newPos = rowm.MaxBy(r => r.col);
-                        break;
-                    case Compass.Down:
-                        var colm = map.Keys.Where(k => k.col == pos.col);
-                        newPos = colm.MinBy(r => r.row);
-                        break;
-                    case Compass.Up:
-                        var coli = map.Keys.Where(k => k.col == pos.col);
-                        newPos = coli.MaxBy(r => r.row);
-                        break;
+                    switch (facing)
+                    {
+                        case Compass.Right:
+                            var rowi = map.Keys.Where(k => k.row == pos.row);
+                            newPos = rowi.MinBy(r => r.col);
+                            break;
+                        case Compass.Left:
+                            var rowm = map.Keys.Where(k => k.row == pos.row);
+                            newPos = rowm.MaxBy(r => r.col);
+                            break;
+                        case Compass.Down:
+                            var colm = map.Keys.Where(k => k.col == pos.col);
+                            newPos = colm.MinBy(r => r.row);
+                            break;
+                        case Compass.Up:
+                            var coli = map.Keys.Where(k => k.col == pos.col);
+                            newPos = coli.MaxBy(r => r.row);
+                            break;
+                    }
+
+                    newFacing = facing;
+                }
+                else
+                {
+                    (newPos, newFacing) = arroundEdgePart1(pos, facing, map);
                 }
             }
 
@@ -146,6 +164,7 @@ public class Day22 : ISolver
             else
             {
                 pos = newPos;
+                facing = newFacing;
                 steps--;
             }
 
@@ -159,7 +178,69 @@ public class Day22 : ISolver
                 Compass.Right => '>',
             };
         }
-        return pos;
+        return (pos, facing);
+    }
+
+    private (Coord newPos, Compass newFacing) arroundEdgePart1(Coord pos, Compass facing, Dictionary<Coord, char> map)
+    {
+        Coord[] target = Array.Empty<Coord>();
+
+        if (map.Count > 100)
+        {
+            //real input
+            switch ((pos, facing))
+            {
+                //B1 > A1
+                case (pos:{row: 1, col: < 101}, Compass.Up):
+                    target = map.Keys.Where(k => k.row > 150 && k.col == 1)
+                        .OrderBy(k => k.row)
+                        .ToArray();
+                    return (target[pos.col - 51], Compass.Up);
+
+                //A2 > B2
+                case (pos:{row: 200}, Compass.Down):
+                    return (new Coord(1, pos.col + 100), facing);
+
+                //A4 > B4
+                case (pos:{ col: 150 }, _):
+                    target = map.Keys.Where(k => k.row > 100 && k.col == 100)
+                        .OrderByDescending(k => k.row)
+                        .ToArray();
+                    return (target[pos.row - 1], Compass.Left);
+
+                //B5 > A5
+                case (pos:{ col: 100, row: < 101 }, Compass.Right):
+                    target = map.Keys.Where(k => k.row == 50 && k.col > 100)
+                        .OrderBy(k => k.col)
+                        .ToArray();
+                    return (target[pos.row - 51], Compass.Up);
+
+
+                default: throw new Exception($"{pos} - {facing} niet gedekt");
+            }
+        }
+
+        switch ((pos, facing))
+        {
+            case (pos:{row: > 4, col: 12}, Compass.Right):
+                target = map.Keys.Where(k => k.row == 9 && k.col > pos.col)
+                    .OrderByDescending(k => k.col)
+                    .ToArray();
+                return (target[pos.row - 5], Compass.Down);
+            case (pos:{row: 12, col: < 13}, Compass.Down):
+                target = map.Keys.Where(k => k.row == 8 && k.col < 5)
+                    .OrderByDescending(k => k.col)
+                    .ToArray();
+                return (target[pos.col - 9], Compass.Up);
+            case (pos:{row: 5, col: > 4}, Compass.Up):
+                target = map.Keys.Where(k => k.col == 9 && k.row < 5)
+                    .OrderBy(k => k.row)
+                    .ToArray();
+                return (target[pos.col - 5], Compass.Right);
+            default: throw new Exception($"{pos} - {facing} niet gedekt");
+        }
+
+        return (pos, facing);
     }
 }
 
