@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Runtime.InteropServices.ComTypes;
 using System.Security;
 using Spectre.Console;
 
@@ -191,30 +192,72 @@ public class Day22 : ISolver
             switch ((pos, facing))
             {
                 //B1 > A1
-                case (pos:{row: 1, col: < 101}, Compass.Up):
-                    target = map.Keys.Where(k => k.row > 150 && k.col == 1)
-                        .OrderBy(k => k.row)
-                        .ToArray();
-                    return (target[pos.col - 51], Compass.Up);
+                case (pos: { row: 1, col: < 101 }, Compass.Up):
+                    return (new Coord(pos.col + 100, 1), Compass.Right);
+
+                //A1 > B1
+                case (pos:{col:1, row: > 150}, Compass.Left):
+                    return (new Coord(1, pos.row - 100), Compass.Down);
 
                 //A2 > B2
                 case (pos:{row: 200}, Compass.Down):
                     return (new Coord(1, pos.col + 100), facing);
 
+                //B2 > A2
+                case (pos:{row: 1, col: > 100}, Compass.Up):
+                    return (new Coord(200, pos.col - 100), facing);
+
+                //A3 > B3
+                case (pos:{row: 101}, Compass.Up):
+                    return (new Coord(pos.col + 50, 51), Compass.Right);
+
+                //B3 > A3
+                case (pos:{ col: 51, row: > 50}, Compass.Left):
+                    return (new Coord(101, pos.row - 50), Compass.Down);
+
                 //A4 > B4
-                case (pos:{ col: 150 }, _):
-                    target = map.Keys.Where(k => k.row > 100 && k.col == 100)
+                case (pos: {col: 150}, Compass.Right):
+                    target = map.Keys.Where(k => k.col == 100 && k.row > 100)
                         .OrderByDescending(k => k.row)
                         .ToArray();
                     return (target[pos.row - 1], Compass.Left);
 
-                //B5 > A5
-                case (pos:{ col: 100, row: < 101 }, Compass.Right):
-                    target = map.Keys.Where(k => k.row == 50 && k.col > 100)
-                        .OrderBy(k => k.col)
+                //B4 > A4
+                case (pos: {col: 100, row: > 100}, Compass.Right):
+                    target = map.Keys.Where(k => k.col == 150)
+                        .OrderByDescending(k => k.row)
                         .ToArray();
-                    return (target[pos.row - 51], Compass.Up);
+                    return (target[pos.row - 101], Compass.Left);
 
+                //A5 > B5
+                case (pos:{row: 50}, Compass.Down):
+                    return (new Coord(pos.col - 50, 100), Compass.Left);
+
+                //B5 > A5
+                case (pos: {col: 100, row: < 101}, Compass.Right):
+                    return (new Coord(50, pos.row + 50), Compass.Up);
+
+                //A6 > B6
+                case (pos:{row: 150}, Compass.Down):
+                    return (new Coord(pos.col + 100, 50), Compass.Left);
+
+                //B6 > A6
+                case (pos:{col: 50}, Compass.Right):
+                    return (new Coord(150, pos.row - 100), Compass.Up);
+
+                //A7 > B7
+                case (pos:{col:51, row: < 51}, Compass.Left):
+                    target = map.Keys.Where(k => k.row < 151 && k.col == 1)
+                        .OrderByDescending(k => k.row)
+                        .ToArray();
+                    return (target[pos.row - 1], Compass.Right);
+
+                //B7 > A7
+                case (pos:{ col: 1, row: < 151}, Compass.Left):
+                    target = map.Keys.Where(k => k.row < 51 && k.col == 51)
+                        .OrderByDescending(k => k.row)
+                        .ToArray();
+                    return (target[pos.row - 101], Compass.Right);
 
                 default: throw new Exception($"{pos} - {facing} niet gedekt");
             }
