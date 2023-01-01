@@ -25,7 +25,7 @@ public partial class Day24Test2022 {
             sut.Should().NotBeNull();
         });
 
-        scenario.Fact("Small sample test", () =>
+        scenario.Fact("Small sample test part 1", () =>
         {
             int.Parse(sut.Solve(lines)[0]).Should().Be(18);
         });
