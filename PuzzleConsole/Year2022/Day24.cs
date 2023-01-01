@@ -65,11 +65,17 @@ public class Day24 : ISolver
         _maxCol = puzzle[0].Length - 2;
         _maxRow = puzzle.Length - 2;
 
-        var pathCount = FindPath(new Coord(-1, 0), new Coord(_maxRow, _maxCol - 1));
+        var start = new Coord(-1, 0);
+        var end = new Coord(_maxRow, _maxCol - 1);
+        var pathCount = FindPath(start, end, 0);
+        var part2 = pathCount;
+        part2 = FindPath(end, start, part2);
+        part2 = FindPath(start, end, part2);
 
         return new[]
         {
-            pathCount.ToString()
+            pathCount.ToString(),
+            part2.ToString(),
         };
 
         // var elfs = new Queue<Coord>();
@@ -169,12 +175,12 @@ public class Day24 : ISolver
         //
     }
 
-    private int FindPath(Coord from, Coord to)
+    private int FindPath(Coord from, Coord to, int round)
     {
         var found = true;
 
         var elfs = new List<(Coord Pos, int Round)>();
-        elfs.Add((from, 0));
+        elfs.Add((from, round));
 
         do
         {

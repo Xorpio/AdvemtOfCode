@@ -29,5 +29,10 @@ public partial class Day24Test2022 {
         {
             int.Parse(sut.Solve(lines)[0]).Should().Be(18);
         });
+
+        scenario.Fact("Small sample test part 2", () =>
+        {
+            int.Parse(sut.Solve(lines)[1]).Should().Be(54);
+        });
     }
 }
