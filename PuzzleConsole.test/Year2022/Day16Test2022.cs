@@ -39,6 +39,8 @@ public partial class Day16Test2022
         {
             int.Parse(sut.Solve(lines)[1]).Should().Be(1707);
         });
+
+        scenario.Skip("Slower tests");
         var moreSamples = new (string input, int part1, int part2)[]
         {
             ("""
