@@ -17,12 +17,12 @@ public partial class Day2Test
         });
 
         var puzzle = """
-A Y
-B X
-C Z
-""";
+        A Y
+        B X
+        C Z
+        """;
 
-        var puzzleLines = puzzle.Split("\r\n");
+        var puzzleLines = puzzle.Split(Environment.NewLine);
 
         scenario.Fact("PuzzleSolve test", () =>
         {
