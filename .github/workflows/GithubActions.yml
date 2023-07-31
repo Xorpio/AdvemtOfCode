@@ -19,7 +19,7 @@ jobs:
     
     # sets up .NET Core SDK
     - name: Setup .NET Core SDK
-      uses: actions/setup-dotnet@V3.2.0
+      uses: actions/setup-dotnet@v3.2.0
 
     - name: Restore nuget
       run: dotnet restore
