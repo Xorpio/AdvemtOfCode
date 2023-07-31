@@ -41,7 +41,7 @@ public partial class Day3Tests
         {
             scenario.Theory("Puzzle solve", p, () =>
             {
-                var puzzleLines = p.p.Split("\r\n");
+                var puzzleLines = p.p.Split(Environment.NewLine);
 
                 sut.Solve(puzzleLines)[0].Should().Be(p.s1.ToString());
                 sut.Solve(puzzleLines)[1].Should().Be(p.s2.ToString());
