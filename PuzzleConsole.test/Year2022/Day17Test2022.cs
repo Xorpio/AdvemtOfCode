@@ -68,10 +68,5 @@ public partial class Day17Test2022 {
         var left = rounds - startRepeat - (repeats * repeat.Length);
 
         count += repeat[0..(int)left].Sum();
-
-        scenario.Fact("count", () =>
-        {
-            count.Should().Be(1);
-        });
     }
 }

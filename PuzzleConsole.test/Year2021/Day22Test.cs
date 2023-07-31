@@ -11,6 +11,8 @@ public partial class Day22Test {
     {
         var sut = new Day22();
 
+        scenario.Skip("AnsiConsole cannot be tested");
+
         scenario.Fact("Sut should not be null", () =>
         {
             sut.Should().NotBeNull();

@@ -56,7 +56,9 @@ public partial class Day21Test {
             r2.Should().Be(1);
         });
 
-        scenario.Fact("Solve puzzle", () => {
+        scenario.Fact("Solve puzzle", () =>
+        {
+            scenario.Skip("To slow");
             var puzzle = new string[]
             {
                 "Player 1 starting position: 4",

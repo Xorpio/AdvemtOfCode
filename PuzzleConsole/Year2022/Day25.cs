@@ -34,6 +34,7 @@ public record SNAFU
                 '2' => 2 * Math.Pow(5,index),
                 '-' => -1 * Math.Pow(5,index),
                 '=' => -2 * Math.Pow(5,index),
+                _ => throw new Exception($"Invalid input: {c}")
             };
         }
     }

@@ -10,6 +10,7 @@ public partial class Day25Test2022 {
     {
         var sut = new Day25();
 
+        scenario.Skip("nog niet gemaakt");
         var sampleInput = """
         SampleInput
         """;

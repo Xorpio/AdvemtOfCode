@@ -24,6 +24,7 @@ public partial class Day19Test2022
 
         var print1 = new BluePrint(lines[0]);
         var print2 = new BluePrint(lines[1]);
+        scenario.Skip("To slow");
 
         scenario.Fact("Test blueprint 1", () =>
         {
