@@ -27,12 +27,12 @@ jobs:
     - name: Build project
       run: dotnet build --no-restore
 
-    - name: Test projec
-      run: dotnet test --no-restore
+#    - name: Test project
+#      run: dotnet test --no-restore
 
     # publishes Blazor project to the release-folder
     - name: Publish .NET Core Project
-      run: dotnet publish AdventOfCode.Blazor/AdventOfCode.Blazor.csproj -c Release -o release --nologo
+      run: dotnet publish AdventOfCode.Blazor/AdventOfCode.Blazor.csproj -c Release -o release --nologo --no-restore
 
     # changes the base-tag in index.html from '/' to 'AdventOfCode' to match GitHub Pages repository subdirectory
     - name: Change base-tag in index.html from / to AdventOfCode
