@@ -25,6 +25,7 @@ jobs:
       uses: actions/setup-node@v3
 
     - name: install tailwind
+      working-directory: ./AdventOfCode.Blazor
       run: npm install
 
     - name: run tailwind
