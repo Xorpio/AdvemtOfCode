@@ -7,7 +7,7 @@
   "linkerEnabled": true,
   "resources": {
     "assembly": {
-      "AdventOfCode.Blazor.dll": "sha256-xS8LGn1eh5JSPkbEPrQtJdsomaikxgPqnkt93vzbb0g=",
+      "AdventOfCode.Blazor.dll": "sha256-6jxdkwxX4ejsDZi2fzWC1qYVjHXtsTOR7URNrzvIrYs=",
       "Microsoft.AspNetCore.Components.dll": "sha256-L4FuYaMKSz0gmBhIP+RXB4fTmwMQei6iyoIT0aKQssg=",
       "Microsoft.AspNetCore.Components.Web.dll": "sha256-I5E15KFjP5Q86mlu6bxMNFpxnm4Bx1V5JX8AaYlMYlc=",
       "Microsoft.AspNetCore.Components.WebAssembly.dll": "sha256-Wbp8vn\/z0GNAQ1oqlrAwNRKOtbrDVxKLiGY2ioq7DK0=",
