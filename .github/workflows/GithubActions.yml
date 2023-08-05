@@ -28,7 +28,8 @@ jobs:
       run: npm install tailwindcss
 
     - name: run tailwind
-      run: npx tailwindcss -i ./AdventOfCode.Blazor/Styles/app.css -o ./AdventOfCode.Blazor/wwwroot/app.css
+      working-directory: ./AdventOfCode.Blazor
+      run: npx tailwindcss -i ./Styles/app.css -o ./wwwroot/app.css
       
     - name: Restore nuget
       run: dotnet restore
