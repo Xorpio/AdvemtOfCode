@@ -1,8 +1,6 @@
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using AdventOfCode.Lib;
 
-namespace AdventOfCode.Solvers.Year2015;
+namespace AdventOfCode.Solvers.Year2015_1;
 
 public class Day1 : BaseSolver
 {
