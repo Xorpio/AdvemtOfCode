@@ -1,7 +1,6 @@
 using AdventOfCode.Lib;
 
-namespace AdventOfCode.Solvers.Year2015_1;
-
+namespace AdventOfCode.Solvers.Year2015;
 public class Day1 : BaseSolver
 {
     public override void Solve(string[] puzzle)

@@ -4,7 +4,6 @@ using AdventOfCode.Solvers.Year2015;
 using FluentAssertions;
 
 namespace AdventOfCode.Solvers.Tests.Year2015;
-
 public class Day1Test
 {
     [Theory(DisplayName = "TestAnswer1")]

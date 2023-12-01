@@ -9,6 +9,8 @@ public abstract class BaseSolver
 
     protected ReplaySubject<string> answer2 = new ReplaySubject<string>(1);
     public IObservable<string> Answer2 => answer2;
+    protected ReplaySubject<string> logger = new ReplaySubject<string>(1);
+    public IObservable<string> Logger => logger;
 
     protected void GiveAnswer1(string answer)
     {
