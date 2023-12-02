@@ -31,7 +31,7 @@ public class StartCommand : Command<StartCommand.Settings>
         // var objectToInstantiate = $"PuzzleConsole.Year{settings.Year}.Day{settings.Day}.Day{settings.Day}, PuzzleConsole";
 
         // AdventOfCode.Solvers.Year2015;
-        var objectToInstantiate = $"AdventOfCode.Solvers.Year{settings.Year}.Day{settings.Day}Solver, AdventOfCode.Solvers";
+        var objectToInstantiate = $"AdventOfCode.Solvers.Year{settings.Year}.Day{settings.Day}.Day{settings.Day}Solver, AdventOfCode.Solvers";
         // var objectToInstantiate = $"PuzzleConsole.Year{settings.Year}.Day{settings.Day}.Day{settings.Day}, PuzzleConsole";
 
         var objectType = Type.GetType(objectToInstantiate);

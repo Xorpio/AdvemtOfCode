@@ -2,7 +2,7 @@ using System.Diagnostics.Contracts;
 using System.Reactive.Subjects;
 using AdventOfCode.Lib;
 
-namespace AdventOfCode.Solvers.Year2023;
+namespace AdventOfCode.Solvers.Year2023.Day1;
 
 public class Day1Solver : BaseSolver
 {
