@@ -1,9 +1,11 @@
 using System.Diagnostics.Contracts;
 using System.Reactive.Subjects;
 using AdventOfCode.Lib;
+using Injectio.Attributes;
 
 namespace AdventOfCode.Solvers.Year2023.Day1;
 
+[RegisterSingleton<BaseSolver>(ServiceKey = "2023-1")]
 public class Day1Solver : BaseSolver
 {
     public override void Solve(string[] puzzle)

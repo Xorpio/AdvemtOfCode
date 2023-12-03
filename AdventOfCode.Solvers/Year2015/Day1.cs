@@ -1,6 +1,6 @@
-using AdventOfCode.Lib;
-
 namespace AdventOfCode.Solvers.Year2015;
+
+[RegisterSingleton<BaseSolver>(ServiceKey = "2015-1")]
 public class Day1 : BaseSolver
 {
     public override void Solve(string[] puzzle)

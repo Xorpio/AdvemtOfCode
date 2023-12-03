@@ -1,11 +1,7 @@
-using System.Collections.Immutable;
-using System.Globalization;
-using System.Reflection;
-using System.Reflection.Metadata;
-using AdventOfCode.Lib;
 
 namespace AdventOfCode.Solvers.Year2023.Day2;
 
+[RegisterSingleton<BaseSolver>(ServiceKey = "2023-2")]
 public class Day2Solver : BaseSolver
 {
     public override void Solve(string[] puzzle)
@@ -16,7 +12,7 @@ public class Day2Solver : BaseSolver
             .Select(g => g.Id)
             .Sum();
 
-        var answer2 = games.Sum(g => g.Power);
+        var answer2 = games.Sum(g => g.Power) - 0;
 
         GiveAnswer1($"{answer1}");
         GiveAnswer2($"{answer2}");

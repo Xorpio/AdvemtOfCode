@@ -1,4 +1,5 @@
-﻿@page "/{Year:int}/{Day:int}"
+﻿@using AdventOfCode.Lib;
+@page "/{Year:int}/{Day:int}"
 
 Welcome on the Advent of Code @Year
 
@@ -6,4 +7,16 @@ Welcome on the Advent of Code @Year
 @code {
     [Parameter] public int Year { get; set; }
     [Parameter] public int Day { get; set; }
+
+    [Inject] private IServiceProvider ServiceProvider { get; set; }
+
+    override protected void OnInitialized()
+    {
+        var solver = ServiceProvider.GetKeyedServices<BaseSolver>($"{Year}-{Day}").FirstOrDefault();
+
+        if (solver == null)
+        {
+            throw new InvalidOperationException($"No solver found for {Year}-{Day}");
+        }
+    }
 }

@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "PuzzleConsole": {
-      "commandName": "Project",
-      "commandLineArgs": "C:\\Users\\xorpi\\Downloads\\input.txt -d 21 -y 2022"
-    }
-  }
-}
