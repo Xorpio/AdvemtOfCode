@@ -34,8 +34,15 @@ public class Day3Solver : BaseSolver
             row++;
         }
 
+        List<(Point point, char num)> gearParts = new();
+
+        var previous = new Point(int.MinValue, int.MinValue);
+        int answer2 = 0;
         foreach(var symbol in _symbols)
         {
+            var gearPart = 0;
+            gearParts.Clear();
+            var isGear = _map[symbol] == '*';
             for(int r = -1; r <=1; r++)
             {
                 for(int c = -1; c <= 1; c++)
@@ -52,17 +59,52 @@ public class Day3Solver : BaseSolver
                         if (!_partNumbers.ContainsKey(point))
                         {
                             _partNumbers.Add(point, number.Value);
-                            FindNeighbours(point);
+                            var neighbors = FindNeighbours(point);
+                            foreach(var (p, n) in neighbors)
+                            {
+                                _partNumbers.Add(p, n);
+                            }
+
+                            if (isGear)
+                            {
+                                gearPart++;
+                                gearParts.Add((point, number.Value));
+                                gearParts.AddRange(FindNeighbours(point));
+                            }
                         }
                     }
                 }
             }
+
+            if (gearPart == 2)
+            {
+                previous = new Point(int.MinValue, int.MinValue);
+                string gear1 = "";
+                string gear2 = "";
+
+                foreach(var (point, c) in gearParts.OrderBy(p => p.point.Row).ThenBy(p => p.point.Col))
+                {
+                    if (point.Row == previous.Row && point.Col == previous.Col + 1)
+                        gear1 += $"{c}";
+                    else
+                    {
+                        gear2 = gear1;
+                        gear1 = "";
+                        gear1 += $"{c}";
+                    }
+
+                    previous = point;
+                }
+
+                answer2 += int.Parse(gear1) * int.Parse(gear2);
+            }
         }
+
+        GiveAnswer2($"{answer2}");
 
         string num = "";
         var answers = new List<string>();
-        var previous = new Point(int.MinValue, int.MinValue);
-
+        previous = new Point(int.MinValue, int.MinValue);
         var partNumbers = _partNumbers.OrderBy(p => p.Key.Row).ThenBy(p => p.Key.Col);
 
         foreach(var (point, c) in partNumbers)
@@ -86,8 +128,9 @@ public class Day3Solver : BaseSolver
         GiveAnswer1($"{answers.Where(a => !string.IsNullOrEmpty(a)).Select(a => int.Parse(a)).Sum()}");
     }
 
-    private void FindNeighbours(Point symbol)
+    private List<(Point point, char num)> FindNeighbours(Point symbol)
     {
+        var list = new List<(Point point, char num)>();
         // find left
         char? number = null;
         var left = symbol with { };
@@ -97,10 +140,7 @@ public class Day3Solver : BaseSolver
             number = GetNumber(left);
             if (number != null)
             {
-                if (!_partNumbers.ContainsKey(left))
-                {
-                    _partNumbers.Add(left, number.Value);
-                }
+                list.Add((left, number.Value));
             }
         } while (number != null);
 
@@ -113,12 +153,11 @@ public class Day3Solver : BaseSolver
             number = GetNumber(right);
             if (number != null)
             {
-                if (!_partNumbers.ContainsKey(right))
-                {
-                    _partNumbers.Add(right, number.Value);
-                }
+                list.Add((right, number.Value));
             }
         } while (number != null);
+
+        return list;
     }
 
     private char? GetNumber(Point point)

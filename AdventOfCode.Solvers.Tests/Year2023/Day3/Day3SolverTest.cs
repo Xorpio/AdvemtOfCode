@@ -42,4 +42,33 @@ public class Day3SolverTest
 
         answer.Should().Be("4361");
     }
+
+    [Fact(DisplayName ="2023 Day 3 Solver Has Correct Solution For Part 2 sample input")]
+    public async Task Day3SolverHasCorrectSolutionForPart2SampleInputAsync()
+    {
+        var puzzle = """
+        467..114..
+        ...*......
+        ..35..633.
+        ......#...
+        617*......
+        .....+.58.
+        ..592.....
+        ......755.
+        ...$.*....
+        .664.598..
+        """;
+
+        var lines = puzzle.Split(Environment.NewLine);
+
+        var solver = new Day3Solver();
+
+        solver.Logger.Subscribe(msg => _output.WriteLine(msg));
+
+        solver.Solve(lines);
+
+        var answer = await solver.Answer2.LastAsync();
+
+        answer.Should().Be("467835");
+    }
 }
