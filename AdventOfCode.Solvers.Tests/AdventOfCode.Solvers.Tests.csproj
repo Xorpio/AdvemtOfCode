@@ -28,4 +28,8 @@
     <ProjectReference Include="..\AdventOfCode.Solvers\AdventOfCode.Solvers.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Year2020\Day3\" />
+  </ItemGroup>
+
 </Project>

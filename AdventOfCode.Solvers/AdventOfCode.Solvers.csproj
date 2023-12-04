@@ -12,5 +12,8 @@
   <ItemGroup>
     <ProjectReference Include="..\AdventOfCode.Lib\AdventOfCode.Lib.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Year2020\Day3\" />
+  </ItemGroup>
 
 </Project>
