@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Linq;
 using AdventOfCode.Lib;
+using System.Diagnostics;
+using System.Reactive.Threading.Tasks;
 
 namespace PuzzleConsole;
 
@@ -28,6 +30,9 @@ public class StartCommand : Command<StartCommand.Settings>
 
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
+        AnsiConsole.MarkupLine($"[grey]Starting puzzle {settings.Year} day {settings.Day}[/]");
         // var objectToInstantiate = $"PuzzleConsole.Year{settings.Year}.Day{settings.Day}.Day{settings.Day}, PuzzleConsole";
 
         // AdventOfCode.Solvers.Year2015;
@@ -56,6 +61,9 @@ public class StartCommand : Command<StartCommand.Settings>
         var a2 = instantiatedObject.Answer2.Select(answer => (Output.Answer2, answer));
         var log = instantiatedObject.Logger.Select(message => (Output.Log, message));
 
+        bool part1Done = false;
+        bool part2Done = false;
+
         var x = Observable.Merge(a1, a2, log).Subscribe(tuple =>
         {
             var (output, message) = tuple;
@@ -65,13 +73,28 @@ public class StartCommand : Command<StartCommand.Settings>
             }
             else
             {
-                AnsiConsole.MarkupLine($"[green]{output}:[/]");
+                part1Done = part1Done || output == Output.Answer1;
+                part2Done = part2Done || output == Output.Answer2;
+                AnsiConsole.MarkupLine($"[green]{output}(took {sw.Elapsed}):[/]");
                 AnsiConsole.MarkupLine($"[green]{message}[/]");
-                Console.ReadLine();
+
+                if(part1Done && part2Done)
+                {
+                    sw.Stop();
+                }
             }
         });
 
         instantiatedObject.Solve(input);
+
+        var answer1 = instantiatedObject.Answer1.LastAsync().ToTask().Result;
+        var answer2 = instantiatedObject.Answer2.LastAsync().ToTask().Result;
+
+        AnsiConsole.MarkupLine($"[green]Answer 1:[/]");
+        AnsiConsole.MarkupLine($"[green]{answer1}[/]");
+        AnsiConsole.MarkupLine($"[green]Answer 2:[/]");
+        AnsiConsole.MarkupLine($"[green]{answer2}[/]");
+        AnsiConsole.MarkupLine($"[grey]Done in {sw.Elapsed}[/]");
 
         return 0;
     }
