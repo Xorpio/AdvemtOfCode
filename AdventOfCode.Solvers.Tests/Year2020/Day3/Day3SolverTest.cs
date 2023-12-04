@@ -7,7 +7,17 @@ public class Day3SolverTest
     private readonly ITestOutputHelper _output;
 
     private string example = """
-    sampleinput
+    ..##.......
+    #...#...#..
+    .#....#..#.
+    ..#.#...#.#
+    .#...##..#.
+    ..#.##.....
+    .#.#.#....#
+    .#........#
+    #.##...#...
+    #...##....#
+    .#..#...#.#
     """;
 
     public Day3SolverTest(ITestOutputHelper output)
@@ -28,7 +38,7 @@ public class Day3SolverTest
 
         var answer = await solver.Answer1.LastAsync();
 
-        answer.Should().Be("?");
+        answer.Should().Be("7");
     }
 
     [Fact(DisplayName ="2020 Day 3 Solver Has Correct Solution For Part 2 sample input")]
@@ -44,5 +54,5 @@ public class Day3SolverTest
 
         var answer = await solver.Answer2.LastAsync();
 
-        answer.Should().Be("?");
+        answer.Should().Be("336");
     }}
