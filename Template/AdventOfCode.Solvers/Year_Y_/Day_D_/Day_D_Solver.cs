@@ -5,5 +5,7 @@ public class Day_D_Solver : BaseSolver
     public override void Solve(string[] puzzle)
     {
         throw new NotImplementedException();
+        GiveAnswer1("");
+        GiveAnswer2("");
     }
 }
