@@ -1,8 +1,3 @@
-using System.Reactive.Subjects;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using AdventOfCode.Lib;
-
 namespace AdventOfCode.Solvers.Year2023.Day3;
 
 public class Day3Solver : BaseSolver

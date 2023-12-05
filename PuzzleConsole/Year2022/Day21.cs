@@ -1,6 +1,3 @@
-using System.Data;
-using System.Security.Cryptography;
-
 namespace PuzzleConsole.Year2022.Day21;
 
 public class Day21 : ISolver

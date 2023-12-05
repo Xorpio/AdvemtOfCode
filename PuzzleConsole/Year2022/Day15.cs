@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace PuzzleConsole.Year2022.Day15;
 
 public class Day15 : ISolver

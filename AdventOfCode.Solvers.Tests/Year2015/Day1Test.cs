@@ -1,7 +1,4 @@
-using System.Formats.Asn1;
-using System.Reactive.Linq;
 using AdventOfCode.Solvers.Year2015;
-using FluentAssertions;
 
 namespace AdventOfCode.Solvers.Tests.Year2015;
 public class Day1Test

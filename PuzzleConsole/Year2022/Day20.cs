@@ -1,6 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using Spectre.Console;
-
 namespace PuzzleConsole.Year2022.Day20;
 
 public class Day20 : ISolver

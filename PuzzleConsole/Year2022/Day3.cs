@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace PuzzleConsole.Year2022.Day3;
 
 public class Day3 : ISolver

@@ -1,8 +1,3 @@
-using System.ComponentModel;
-using System.Runtime.InteropServices.ComTypes;
-using System.Security;
-using Spectre.Console;
-
 namespace PuzzleConsole.Year2022.Day22;
 
 public class Day22 : ISolver

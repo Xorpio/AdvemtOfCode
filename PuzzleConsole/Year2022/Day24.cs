@@ -1,5 +1,4 @@
 using System.Reflection;
-using Spectre.Console;
 
 namespace PuzzleConsole.Year2022.Day24;
 

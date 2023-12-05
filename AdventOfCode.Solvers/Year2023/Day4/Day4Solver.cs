@@ -1,6 +1,4 @@
 
-using System.Globalization;
-
 namespace AdventOfCode.Solvers.Year2023.Day4;
 
 public class Day4Solver : BaseSolver

@@ -1,5 +1,3 @@
-using AdventOfCode.Lib;
-
 namespace AdventOfCode.Solvers.Year2015;
 public class Day1 : BaseSolver
 {

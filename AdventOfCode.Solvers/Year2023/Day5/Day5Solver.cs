@@ -1,8 +1,3 @@
-using System.Globalization;
-using System.Net;
-using System.Text.RegularExpressions;
-using Microsoft.VisualBasic;
-
 namespace AdventOfCode.Solvers.Year2023.Day5;
 
 public class Day5Solver : BaseSolver

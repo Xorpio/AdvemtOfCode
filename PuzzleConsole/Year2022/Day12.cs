@@ -1,5 +1,3 @@
-using Spectre.Console;
-
 namespace PuzzleConsole.Year2022.Day12;
 
 public class Day12 : ISolver

@@ -1,6 +1,4 @@
-﻿using System.Reactive.Linq;
-
-namespace PuzzleConsole.Year2021.Day7;
+﻿namespace PuzzleConsole.Year2021.Day7;
 
 public class Day7 : ISolver
 {

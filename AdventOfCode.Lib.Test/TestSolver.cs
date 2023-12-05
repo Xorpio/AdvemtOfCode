@@ -1,9 +1,4 @@
-﻿using System.Reactive.Linq;
-using System.Reactive.Subjects;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.VisualBasic;
-
-namespace AdventOfCode.Lib.Tests;
+﻿namespace AdventOfCode.Lib.Tests;
 
 public class TestSolver : BaseSolver
 {

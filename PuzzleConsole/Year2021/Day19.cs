@@ -1,5 +1,4 @@
 using Spectre.Console;
-using Xunit;
 
 namespace PuzzleConsole.Year2021.Day19;
 

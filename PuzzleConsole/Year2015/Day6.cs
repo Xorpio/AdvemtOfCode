@@ -1,5 +1,3 @@
-using System.Runtime.ExceptionServices;
-
 namespace PuzzleConsole.Year2015.Day6;
 
 public class Day6 : ISolver

@@ -1,6 +1,4 @@
-using System.Reactive.Linq;
 using AdventOfCode.Solvers.Year2023.Day2;
-using FluentAssertions;
 
 namespace AdventOfCode.Solvers.Tests.Year2023.Day2;
 

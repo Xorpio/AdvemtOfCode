@@ -1,9 +1,3 @@
-using System.Collections.Immutable;
-using System.Globalization;
-using System.Reflection;
-using System.Reflection.Metadata;
-using AdventOfCode.Lib;
-
 namespace AdventOfCode.Solvers.Year2023.Day2;
 
 public class Day2Solver : BaseSolver

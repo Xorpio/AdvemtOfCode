@@ -1,6 +1,3 @@
-using System.Runtime.InteropServices.ComTypes;
-using Spectre.Console.Rendering;
-
 namespace PuzzleConsole.Year2022.Day7;
 
 public class Day7 : ISolver

@@ -1,6 +1,3 @@
-using System.Linq;
-using PuzzleConsole;
-
 namespace PuzzleConsole.Year2021.Day18;
 
 public class Day18 : ISolver

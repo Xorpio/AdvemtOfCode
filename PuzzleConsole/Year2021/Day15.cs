@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace PuzzleConsole.Year2021.Day15;
+﻿namespace PuzzleConsole.Year2021.Day15;
 
 public class Day15 : ISolver
 {

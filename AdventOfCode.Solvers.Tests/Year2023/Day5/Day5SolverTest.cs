@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using AdventOfCode.Solvers.Year2023.Day5;
+﻿using AdventOfCode.Solvers.Year2023.Day5;
 
 namespace AdventOfCode.Solvers.Tests.Year2023.Day5;
 
