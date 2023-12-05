@@ -30,6 +30,9 @@ public class StartCommand : Command<StartCommand.Settings>
 
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
+        try
+        {
+
         Stopwatch sw = new Stopwatch();
         sw.Start();
         AnsiConsole.MarkupLine($"[grey]Starting puzzle {settings.Year} day {settings.Day}[/]");
@@ -97,6 +100,13 @@ public class StartCommand : Command<StartCommand.Settings>
         AnsiConsole.MarkupLine($"[grey]Done in {sw.Elapsed}[/]");
 
         return 0;
+        }
+         catch (Exception ex)
+        {
+            AnsiConsole.WriteException(ex);
+        }
+
+        return -1;
     }
 }
 
