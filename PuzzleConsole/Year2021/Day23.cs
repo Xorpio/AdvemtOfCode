@@ -8,6 +8,8 @@ public class Day23 : ISolver
 
     public string[] Solve(string[] puzzle)
     {
+
+
         var games = PuzzleToGame(puzzle);
 
         return new string[] { SolveGame(games[0]).ToString(), SolveGame(games[1]).ToString() };
