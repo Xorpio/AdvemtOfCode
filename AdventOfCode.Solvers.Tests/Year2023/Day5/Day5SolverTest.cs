@@ -1,4 +1,5 @@
-﻿using AdventOfCode.Solvers.Year2023.Day5;
+﻿using System.Runtime.InteropServices;
+using AdventOfCode.Solvers.Year2023.Day5;
 
 namespace AdventOfCode.Solvers.Tests.Year2023.Day5;
 
@@ -119,5 +120,132 @@ public class Day5SolverTest
     public static bool RangesOverlap(decimal start1, decimal end1, decimal start2, decimal end2)
     {
         return (start1 <= end2) && (end1 >= start2);
+    }
+
+    [Theory(DisplayName = "range no overlap. should return null and oldrange")]
+    [InlineData("1 2 2")]
+    [InlineData("1 8 2")]
+    public void noOverlap(string input)
+    {
+        var adjust = input.Split(' ').Select(decimal.Parse).ToList();
+        var solver = new Day5Solver();
+
+        var range = (start: 4, count: 4);
+        var (newRange, oldRanges) = solver.AdjustRanges(adjust, range);
+
+        newRange.Should().BeNull();
+        oldRanges.Should().BeEquivalentTo(new List<(decimal start, decimal count)> { range });
+    }
+
+    [Fact(DisplayName = "range start outside and end inside. should return newrange and oldrange")]
+    public void StartOverlap()
+    {
+        var adjust = new List<decimal>() { 4, 8, 4 };
+
+        var solver = new Day5Solver();
+
+        var range = (start: 10, count: 6);
+        var (newRange, oldRanges) = solver.AdjustRanges(adjust, range);
+
+        newRange.Value.start.Should().Be(6);
+        newRange.Value.count.Should().Be(2);
+        oldRanges.Should().BeEquivalentTo(new List<(decimal start, decimal count)>
+        {
+            new (12,4)
+        });
+    }
+
+    [Fact(DisplayName = "range start inside and end outsite. should return newrange and oldrange")]
+    public void endOverlap()
+    {
+        var adjust = new List<decimal>() { 50, 14, 4 };
+
+        var solver = new Day5Solver();
+
+        var range = (start: 10, count: 6);
+        var (newRange, oldRanges) = solver.AdjustRanges(adjust, range);
+
+        newRange.Value.start.Should().Be(50);
+        newRange.Value.count.Should().Be(2);
+        oldRanges.Should().BeEquivalentTo(new List<(decimal start, decimal count)>
+        {
+            new (10,4)
+        });
+    }
+
+    [Fact(DisplayName = "range start outside and end outside. should return newrange and no oldrange")]
+    public void StartAndEndOverlap()
+    {
+        var adjust = new List<decimal>() { 4, 8, 20 };
+
+        var solver = new Day5Solver();
+
+        var range = (start: 10, count: 6);
+        var (newRange, oldRanges) = solver.AdjustRanges(adjust, range);
+
+        newRange.Value.start.Should().Be(6);
+        newRange.Value.count.Should().Be(6);
+        oldRanges.Should().BeNull();
+    }
+
+    [Fact(DisplayName = "range start inside and end inside. should return newrange and 2 oldranges")]
+    public void StartAndEndInside()
+    {
+        var adjust = new List<decimal>() { 4, 12, 2 };
+
+        var solver = new Day5Solver();
+
+        var range = (start: 10, count: 6);
+        var (newRange, oldRanges) = solver.AdjustRanges(adjust, range);
+
+        newRange.Value.start.Should().Be(4);
+        newRange.Value.count.Should().Be(2);
+        oldRanges.Should().BeEquivalentTo(new List<(decimal start, decimal count)>
+        {
+            new (10,2),
+            new (14,2)
+        });
+    }
+
+    [Theory(DisplayName = "find edge cases")]
+    [InlineData("19 8 2", "", "10 5")]
+    [InlineData("19 9 2", "20 1", "11 4")]
+    [InlineData("20 10 2", "20 2", "12 3")]
+    [InlineData("21 11 2", "21 2", "10 1,13 2")]
+    [InlineData("23 13 2", "23 2", "10 3")]
+    [InlineData("24 14 2", "24 1", "10 4")]
+    [InlineData("25 15 2", "", "10 5")]
+    [InlineData("20 10 5", "20 5", "")]
+    [InlineData("19 9 6", "20 5", "")]
+    [InlineData("20 10 6", "20 5", "")]
+    public void Test1(string input, string expectedNew, string excpectedOld)
+    {
+        var adjust = input.Split(' ').Select(decimal.Parse).ToList();
+
+        (decimal start, decimal count)? expectedNewRange = null;
+        if (!string.IsNullOrWhiteSpace(expectedNew))
+        {
+            var parts = expectedNew.Split(' ').Select(decimal.Parse).ToList();
+            expectedNewRange = (parts[0], parts[1]);
+        }
+
+        List<(decimal start, decimal count)>? expectedOldRanges = null;
+        if (!string.IsNullOrWhiteSpace(excpectedOld))
+        {
+            var parts = excpectedOld.Split(',');
+            expectedOldRanges = parts.Select(p =>
+            {
+                var range = p.Split(' ').Select(decimal.Parse).ToList();
+                return (range[0], range[1]);
+            }).ToList();
+        }
+
+        var solver = new Day5Solver();
+
+        var range = (start: 10, count: 5);
+        var (newRange, oldRanges) = solver.AdjustRanges(adjust, range);
+
+        newRange.Should().Be(expectedNewRange);
+        oldRanges.Should().BeEquivalentTo(expectedOldRanges);
     }
 }
