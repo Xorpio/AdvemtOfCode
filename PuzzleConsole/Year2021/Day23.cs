@@ -152,7 +152,7 @@ public class Day23 : ISolver
                 }
             }
 
-            visited.TryAdd(game.ToString(), true); 
+            visited.TryAdd(game.ToString(), true);
         } while (queue.Count > 0);
 
         return answer;
@@ -295,7 +295,7 @@ public record Move(Location From, Location To, PodType Type)
         {
             var score = Math.Abs(From.Col - To.Col);
             score += Math.Abs(From.Row - To.Row);
-            return Type switch 
+            return Type switch
             {
                 PodType.Dessert => score * 1000,
                 PodType.Amber => score,

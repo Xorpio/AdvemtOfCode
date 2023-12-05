@@ -1,14 +1,15 @@
-﻿using PuzzleConsole.Year_Y_.Day_D_;
+﻿using PuzzleConsole.Year2015.Day4;
 
-namespace PuzzleConsole.test.Year_Y_;
+namespace PuzzleConsole.test.Year2015;
 
-[Trait("Year", "_Y_")]
-[Trait("Day", "_D_")]
-public partial class Day_D_Test {
+[Trait("Year", "2015")]
+[Trait("Day", "4")]
+public partial class Day4Test
+{
     [Scenario]
     public void SolveTest(ScenarioContext scenario)
     {
-        var sut = new Day_D_();
+        var sut = new Day4();
 
         scenario.Fact("Sut should not be null", () =>
         {

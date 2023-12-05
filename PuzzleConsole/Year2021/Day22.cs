@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using Spectre.Console;
 
 namespace PuzzleConsole.Year2021.Day22;

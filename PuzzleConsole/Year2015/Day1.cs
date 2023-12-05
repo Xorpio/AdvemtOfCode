@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace PuzzleConsole.Year2015.Day1;
+﻿namespace PuzzleConsole.Year2015.Day1;
 
 public class Day1 : ISolver
 {

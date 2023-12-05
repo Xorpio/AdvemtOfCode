@@ -1,7 +1,3 @@
-using System.Diagnostics;
-using System.Globalization;
-using PuzzleConsole;
-
 namespace PuzzleConsole.Year2021.Day16;
 
 public class Day16 : ISolver

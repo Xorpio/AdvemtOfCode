@@ -388,3 +388,5 @@ FodyWeavers.xsd
 *.sln.iml
 
 Puzzles
+
+AdventOfCode.Blazor/wwwroot/app.css

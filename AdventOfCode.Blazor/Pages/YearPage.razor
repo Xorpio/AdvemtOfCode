@@ -1,0 +1,9 @@
+﻿@page "/{Year:int}/{Day:int}"
+
+Welcome on the Advent of Code @Year
+
+
+@code {
+    [Parameter] public int Year { get; set; }
+    [Parameter] public int Day { get; set; }
+}
