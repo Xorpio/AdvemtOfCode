@@ -53,23 +53,23 @@ public class Hand : IComparable<Hand>
         {
             returnType = TypeOfHand.FiveOfAKind;
         }
-        if (groups.Any(g => g.Count() == 4))
+        else if (groups.Any(g => g.Count() == 4))
         {
             returnType = TypeOfHand.FourOfAKind;
         }
-        if (groups.Any(g => g.Count() == 3) && groups.Any(g => g.Count() == 2))
+        else if (groups.Any(g => g.Count() == 3) && groups.Any(g => g.Count() == 2))
         {
             returnType = TypeOfHand.FullHouse;
         }
-        if (groups.Any(g => g.Count() == 3))
+        else if (groups.Any(g => g.Count() == 3))
         {
             returnType = TypeOfHand.ThreeOfAKind;
         }
-        if (groups.Count(g => g.Count() == 2) == 2)
+        else if (groups.Count(g => g.Count() == 2) == 2)
         {
             returnType = TypeOfHand.TwoPair;
         }
-        if (groups.Any(g => g.Count() == 2))
+        else if (groups.Any(g => g.Count() == 2))
         {
             returnType = TypeOfHand.OnePair;
         }

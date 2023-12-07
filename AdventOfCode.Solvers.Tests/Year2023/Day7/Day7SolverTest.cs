@@ -92,4 +92,12 @@ public class Day7SolverTest
         var hand = new Hand(input);
         hand.HandType.Should().Be(TypeOfHand.OnePair);
     }
+
+    [Fact]
+    public void FullHouse()
+    {
+        var input = "TTTJJ 824";
+        var hand = new Hand(input);
+        hand.HandType.Should().Be(TypeOfHand.FullHouse);
+    }
 }
