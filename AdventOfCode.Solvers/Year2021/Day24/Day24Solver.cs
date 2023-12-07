@@ -12,11 +12,87 @@ public class Day24Solver : BaseSolver
 
         var part1 = solvePuzzle(0, 0, 0) ?? throw new Exception();
 
-        GiveAnswer1("");
+        // var alu = new List<(bool, Func<int, int, int>)>();
+        // var countInBlock = 1;
+        // var aluInstruction = new Func<int, int, int>((w, z) => 0);
+        // bool isType1 = false;
+        // for (int i = 1; i < _puzzle.Length; i++)
+        // {
+        //     if (_puzzle[i] == "inp w")
+        //     {
+        //         countInBlock = 0;
+        //         alu.Add((isType1, aluInstruction));
+        //     }
+        //
+        //     if (countInBlock == 4)
+        //     {
+        //         isType1 = _puzzle[i] == "div z 1";
+        //     }
+        //
+        //     if (countInBlock == 5)
+        //     {
+        //         logger.OnNext(_puzzle[i]);
+        //         var v = int.Parse(_puzzle[i].Split(' ')[2]);
+        //         aluInstruction = isType1 ?
+        //             (w, z) => (26 * z) + w + v:
+        //             (w, z) =>
+        //             {
+        //                 var result =  (z % 26) + v;
+        //                 // logger.OnNext($"(z % 26) + v -=- ({z} % 26) + {v} = {result}");
+        //                 return result;
+        //             };
+        //     }
+        //
+        //     countInBlock++;
+        // }
+        //
+        // alu.Add((isType1, aluInstruction));
+        //
+        // var a = s(alu.ToArray(), 0);
+
+        GiveAnswer1(part1);
         GiveAnswer2("");
     }
 
-    public string? solvePuzzle(int count, int z, int level)
+    private string s((bool type, Func<int,int,int> f)[] alu, int z)
+    {
+        var (type, f) = alu[0];
+        if (type)
+        {
+            for (int w = 9; w > 0; w--)
+            {
+                var newz = f(w, z);
+
+                if (alu.Length == 1)
+                {
+                    return newz == 0 ? $"{w}" : null;
+                }
+
+                var result = s(alu[1..], newz);
+
+                if (result != null)
+                {
+                    return $"{w}-{result}";
+                }
+            }
+
+            return null;
+        }
+
+        var newW = f(0, z);
+        var newZ = (int)Math.Floor((decimal)z / 26);
+        if (alu.Length == 1)
+        {
+            return newZ == 0 ? $"{newW}" : null;
+        }
+
+        if (newW > 9 || newW == 0)
+            newZ *= 26;
+        var res = s(alu[1..], newZ);
+        return (res == null) ? null : $"{newW}+{res}";
+    }
+
+    public string? solvePuzzle(int count, int z, int level, string prefix = "")
     {
         var instruction = _puzzle[count];
 
@@ -27,7 +103,6 @@ public class Day24Solver : BaseSolver
         {
             for (int n = 9; n > 0; n--)
             {
-                logger.OnNext("n: ".PadRight(level) + n);
                 var (newZ, newCount) = runBlock(count + 1, n, z);
 
                 if (newCount == _puzzle.Length)
@@ -35,7 +110,7 @@ public class Day24Solver : BaseSolver
                     return newZ == 0 ? $"{n}" : null;
                 }
 
-                var result = solvePuzzle(newCount, newZ, level + 1);
+                var result = solvePuzzle(newCount, newZ, level + 1, $"{prefix}{n}");
                 if (result != null)
                 {
                     return $"{n}{result}";
@@ -51,13 +126,12 @@ public class Day24Solver : BaseSolver
 
                 if (newZ < z)
                 {
-                    logger.OnNext("n: ".PadRight(level) + n);
                     if (newCount == _puzzle.Length)
                     {
                         return newZ == 0 ? $"{n}" : null;
                     }
 
-                    var result = solvePuzzle(newCount, newZ, level + 1);
+                    var result = solvePuzzle(newCount, newZ, level + 1, $"{prefix}{n}");
                     if (result != null)
                     {
                         return $"{n}{result}";
