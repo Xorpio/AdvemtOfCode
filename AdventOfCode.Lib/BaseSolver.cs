@@ -17,7 +17,24 @@ public abstract class BaseSolver
         answer1.OnNext(answer);
         answer1.OnCompleted();
     }
+    protected void GiveAnswer1(int answer)
+    {
+        GiveAnswer1(answer.ToString());
+    }
+    protected void GiveAnswer1(decimal answer)
+    {
+        GiveAnswer1(answer.ToString());
+    }
 
+    protected void GiveAnswer2(int answer)
+    {
+        GiveAnswer2(answer.ToString());
+    }
+    protected void GiveAnswer2(decimal answer)
+    {
+        GiveAnswer2(answer.ToString());
+    }
+    
     protected void GiveAnswer2(string answer)
     {
         answer2.OnNext(answer);
