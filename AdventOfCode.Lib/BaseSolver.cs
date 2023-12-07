@@ -41,6 +41,9 @@ public abstract class BaseSolver
         answer2.OnCompleted();
     }
 
+    protected void GiveAnswer1(double answer) => GiveAnswer1(answer.ToString());
+    protected void GiveAnswer2(double answer) => GiveAnswer2(answer.ToString());
+
     public abstract void Solve(string[] puzzle);
 
     public void Reset()
