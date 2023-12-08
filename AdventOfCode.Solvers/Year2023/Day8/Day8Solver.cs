@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Dynamic;
 
 namespace AdventOfCode.Solvers.Year2023.Day8;
@@ -28,26 +29,28 @@ public class Day8Solver : BaseSolver
         key = "AAA";
         var step = 0;
         var instruction = puzzle[0];
-        // do
-        // {
-        //     var i = instruction[step % instruction.Length];
-        //     key = i switch
-        //     {
-        //         'R' => map[key].right,
-        //         'L' => map[key].left,
-        //         _ => throw new Exception("Unknown instruction")
-        //     };
+        do
+        {
+            var i = instruction[step % instruction.Length];
+            key = i switch
+            {
+                'R' => map[key].right,
+                'L' => map[key].left,
+                _ => throw new Exception("Unknown instruction")
+            };
 
-        //     step++;
-        // } while(key != "ZZZ");
+            step++;
+        } while(key != "ZZZ");
 
-        // GiveAnswer1(step);
+        GiveAnswer1(step);
 
         var keys = map.Select(k => k.Key).Where(k => k.EndsWith("A")).ToList();
         foreach(var k in keys)
         {
             logger.OnNext($"{k} = {map[k]}");
         }
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
         step = 0;
         do
         {
@@ -66,6 +69,11 @@ public class Day8Solver : BaseSolver
 
             keys = temp;
             step++;
+
+            if (step % 100000 == 0)
+            {
+                logger.OnNext($"{step} {stopwatch.Elapsed}");
+            }
         } while(!keys.All(k =>k.EndsWith("Z")));        
 
 
