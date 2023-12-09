@@ -75,28 +75,39 @@ public class Day8Solver : BaseSolver
             logger.OnNext($"{k} = {step}");
             loops.Add(step, 0);
         }
-        var combinations = numbers.SelectMany((x, i) => numbers.Skip(i + 1), (x, y) => (x, y));
 
-        //find biggest common
-        var time = new Stopwatch();
-        time.Start();
-        double c = 1;
-        double current = 0;
-        do
+        //find least common multiple between loops
+        GiveAnswer2(FindLeastCommonMultiple(loops.Keys.ToList()));
+        return;
+
+    }
+
+    public double FindLeastCommonMultiple(List<double> numbers)
+    {
+        double lcm = numbers[0];
+
+        for (int i = 1; i < numbers.Count; i++)
         {
-            var lowest = loops.OrderBy(l => l.Value).First();
-            loops[lowest.Key] += lowest.Key;
-            current = loops[lowest.Key];
+            lcm = CalculateLCM(lcm, numbers[i]);
+        }
 
-            if (current > c)
-            {
-                c = c * 10;
-                logger.OnNext($"{c} - {current} elapsed {time.Elapsed}. digits: {c.ToString().Length}");
-            }
-        } while(loops.Any(l => l.Value != current));
+        return lcm;
+    }
 
-        time.Stop();
+    private double CalculateLCM(double a, double b)
+    {
+        return (a * b) / CalculateGCD(a, b);
+    }
 
-        GiveAnswer2(loops.First().Value);
+    private double CalculateGCD(double a, double b)
+    {
+        while (b != 0)
+        {
+            double remainder = a % b;
+            a = b;
+            b = remainder;
+        }
+
+        return a;
     }
 }
