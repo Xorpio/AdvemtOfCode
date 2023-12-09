@@ -1,3 +1,4 @@
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Dynamic;
 
@@ -49,34 +50,53 @@ public class Day8Solver : BaseSolver
         {
             logger.OnNext($"{k} = {map[k]}");
         }
-        var stopwatch = new Stopwatch();
-        stopwatch.Start();
-        step = 0;
+
+        var loops = new Dictionary<double, double>();
+        var answer = 1;
+        foreach(var k in keys)
+        {
+            key = k;
+            step = 0;
+            do
+            {
+                var i = instruction[step % instruction.Length];
+
+                key = i switch
+                {
+                    'R' => map[key].right,
+                    'L' => map[key].left,
+                    _ => throw new Exception("Unknown instruction")
+                };
+
+                step++;
+
+            } while(!key.EndsWith("Z"));
+
+            logger.OnNext($"{k} = {step}");
+            loops.Add(step, 0);
+        }
+        var combinations = numbers.SelectMany((x, i) => numbers.Skip(i + 1), (x, y) => (x, y));
+
+        //find biggest common
+        var time = new Stopwatch();
+        time.Start();
+        double c = 1;
+        double current = 0;
         do
         {
-            var i = instruction[step % instruction.Length];
-            var temp = new List<string>();
+            var lowest = loops.OrderBy(l => l.Value).First();
+            loops[lowest.Key] += lowest.Key;
+            current = loops[lowest.Key];
 
-            foreach(var k in keys)
+            if (current > c)
             {
-                temp.Add(i switch
-                {
-                    'R' => map[k].right,
-                    'L' => map[k].left,
-                    _ => throw new Exception("Unknown instruction")
-                });
+                c = c * 10;
+                logger.OnNext($"{c} - {current} elapsed {time.Elapsed}. digits: {c.ToString().Length}");
             }
+        } while(loops.Any(l => l.Value != current));
 
-            keys = temp;
-            step++;
+        time.Stop();
 
-            if (step % 100000 == 0)
-            {
-                logger.OnNext($"{step} {stopwatch.Elapsed}");
-            }
-        } while(!keys.All(k =>k.EndsWith("Z")));        
-
-
-        GiveAnswer2(step);
+        GiveAnswer2(loops.First().Value);
     }
 }
