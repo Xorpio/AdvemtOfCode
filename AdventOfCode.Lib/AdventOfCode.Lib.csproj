@@ -6,6 +6,14 @@
     <Nullable>enable</Nullable>
     <RootNamespace>AdventOfCode.Lib</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Models\Point.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Models\Point.cs" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Reactive" Version="6.0.0" />
   </ItemGroup>
