@@ -7,13 +7,20 @@ public class Day12Solver : BaseSolver
     public override void Solve(string[] puzzle)
     {
         var answer = 0;
+        double answer2 = 0;
         foreach(var line in puzzle)
         {
             var ans = solveLine(line);
             answer += ans;
+
+            var ans2 = solveLineSmart(line);
+
+            answer2 += ans2;
+
+            logger.OnNext($"{line} - answer: {ans} answer2: {ans2}");
         }
         GiveAnswer1(answer);
-        GiveAnswer2("");
+        GiveAnswer2(answer2);
     }
 
     public int solveLine(string line)
@@ -48,14 +55,26 @@ public class Day12Solver : BaseSolver
             if(correct)
             {
                 count++;
-
-                logger.OnNext($"line  {line} is correct: {correct} {count}");
-                logger.OnNext($"line  {l} is correct: {correct}");
             }
         }
-        logger.OnNext("");
 
         return count;
+    }
+    public double solveLineSmart(string line)
+    {
+        var parts = line.Split(' ');
+        double first = solveLine($"{parts[0]}? {parts[1]}");
+        double middle = solveLine($"?{parts[0]}? {parts[1]}");
+        double end = solveLine($"?{parts[0]} {parts[1]}");
+
+        logger.OnNext($"first: {first} middle: {middle} end: {end}");
+
+        if (parts[0].EndsWith("#"))
+        {
+            return first * first * first * first * first;
+        }
+
+        return first * end * end * end * end;
     }
     
     private IEnumerable<string> createPattern(int[] pattern, int maxLength)

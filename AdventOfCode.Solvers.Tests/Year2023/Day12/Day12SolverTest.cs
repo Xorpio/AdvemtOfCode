@@ -49,7 +49,7 @@ public class Day12SolverTest
 
         var answer = await solver.Answer2.LastAsync();
 
-        answer.Should().Be("?");
+        answer.Should().Be("525152");
     }
 
     [Fact]
@@ -61,6 +61,8 @@ public class Day12SolverTest
 
         solver.Logger.Subscribe(msg => _output.WriteLine(msg));
 
-        solver.solveLine(".???????#?##?? 3,6").Should().Be(-1);
+        _ = solver.solveLineSmart("????.???.????.? 1,2,1,2");
+
+        Assert.Fail("");
     }
 }
