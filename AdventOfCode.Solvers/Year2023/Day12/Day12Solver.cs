@@ -12,20 +12,30 @@ public class Day12Solver : BaseSolver
         double answer2 = 0;
         foreach(var line in puzzle)
         {
-            var ans = solveLine(line);
+            var parts = line.Split(' ');
+            var numbers = parts[1].Split(',').Select(int.Parse).ToArray();
+
+            var ans = solveRecursive(parts[0], null, numbers);
             answer += ans;
 
-            var parts = line.Split(' ');
+            var bigline =
+                $"{parts[0]}?{parts[0]}?{parts[0]}?{parts[0]}?{parts[0]} {parts[1]},{parts[1]},{parts[1]},{parts[1]},{parts[1]}";
+            parts = bigline.Split(' ');
+            numbers = parts[1].Split(',').Select(int.Parse).ToArray();
 
-            var numbers = parts[1].Split(',').Select(int.Parse).ToArray();
             var ans2 = solveRecursive(parts[0], null, numbers);
-
             answer2 += ans2;
 
             logger.OnNext($"{line} - answer: {ans} answer2: {ans2}");
         }
 
-        logger.OnNext($"cache hit: {cacheHit} - {_cache.Count}"); 
+        logger.OnNext($"cache hit: {cacheHit} - {_cache.Count}");
+
+        // foreach(var c in _cache)
+        // {
+        //     logger.OnNext($"{c.Key} - {c.Value}");
+        // }
+
         GiveAnswer1(answer);
         GiveAnswer2(answer2);
     }
@@ -36,18 +46,61 @@ public class Day12Solver : BaseSolver
         if (_cache.ContainsKey(key))
         {
             cacheHit++;
+            // logger.OnNext($"cache: {key} - value: {_cache[key]}");
             return _cache[key];
         }
 
         if (string.IsNullOrEmpty(inp) && (remaining != null || others.Length > 0))
         {
             _cache.Add(key, 0);
+            // logger.OnNext($"cache: {key} - value: {_cache[key]}");
             return _cache[key];
         }
 
-        if (string.IsNullOrEmpty(inp))
+        if (inp.Length == 1)
         {
-            return 1;
+            if (inp[0] == '#')
+            {
+                if (remaining == 1 || (others.Length == 1 && others[0] == 1))
+                {
+                    _cache.Add(key, 1);
+                    // logger.OnNext($"cache: {key} - value: {_cache[key]}");
+                    return _cache[key];
+                }
+
+                _cache.Add(key, 0);
+                // logger.OnNext($"cache: {key} - value: {_cache[key]}");
+                return _cache[key];
+            }
+
+            if (inp[0] == '.')
+            {
+                if ((remaining != null && remaining > 0) || others.Length > 0)
+                {
+                    _cache.Add(key, 0);
+                    // logger.OnNext($"cache: {key} - value: {_cache[key]}");
+                    return _cache[key];
+                }
+
+                _cache.Add(key, 1);
+            // logger.OnNext($"cache: {key} - value: {_cache[key]}");
+                return _cache[key];
+            }
+
+            if (
+                (remaining == null && others.Length == 0) ||
+                (remaining == null && others is [1]) ||
+                (remaining is < 2 && others.Length == 0))
+            {
+                _cache.Add(key, 1);
+            // logger.OnNext($"cache: {key} - value: {_cache[key]}");
+                return _cache[key];
+            }
+
+            _cache.Add(key, 0);
+            // logger.OnNext($"cache: {key} - value: {_cache[key]}");
+            return _cache[key];
+
         }
 
         switch(inp[0])
@@ -58,27 +111,33 @@ public class Day12Solver : BaseSolver
                     if (others.Length == 0)
                     {
                         _cache.Add(key, 0);
+            // logger.OnNext($"cache: {key} - value: {_cache[key]}");
                         return _cache[key];
                     }
                     remaining = others[0];
+                    others = others[1..];
                 }
 
                 if (remaining == 0)
                 {
                     _cache.Add(key, 0);
+            // logger.OnNext($"cache: {key} - value: {_cache[key]}");
                     return _cache[key];
                 }
 
                 _cache.Add(key, solveRecursive(inp[1..], remaining - 1, others));
+            // logger.OnNext($"cache: {key} - value: {_cache[key]}");
                 return _cache[key];
             case '.':
                 if (remaining != null &&  remaining > 0)
                 {
                     _cache.Add(key, 0);
+            // logger.OnNext($"cache: {key} - value: {_cache[key]}");
                     return _cache[key];
                 }
 
                 _cache.Add(key, solveRecursive(inp[1..], null, others));
+            // logger.OnNext($"cache: {key} - value: {_cache[key]}");
                 return _cache[key];
             case '?':
                 if (remaining == null)
@@ -86,20 +145,24 @@ public class Day12Solver : BaseSolver
                     if (others.Length > 0)
                     {
                         _cache.Add(key, solveRecursive(inp[1..], null, others) + solveRecursive(inp[1..], others[0] - 1, others[1..]));
+            // logger.OnNext($"cache: {key} - value: {_cache[key]}");
                         return _cache[key];
                     }
                     
                     _cache.Add(key, solveRecursive(inp[1..], null, others));
+            // logger.OnNext($"cache: {key} - value: {_cache[key]}");
                     return _cache[key];
                 }
 
                 if (remaining == 0)
                 {
                     _cache.Add(key, solveRecursive(inp[1..], null, others));
+            // logger.OnNext($"cache: {key} - value: {_cache[key]}");
                     return _cache[key];
                 }
 
                 _cache.Add(key, solveRecursive(inp[1..], remaining - 1, others));
+            // logger.OnNext($"cache: {key} - value: {_cache[key]}");
                 return _cache[key];
         }
 

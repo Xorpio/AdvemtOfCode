@@ -61,8 +61,8 @@ public class Day12SolverTest
 
         solver.Logger.Subscribe(msg => _output.WriteLine(msg));
 
-        _ = solver.solveLineSmart("????.???.????.? 1,2,1,2");
+        var ans = solver.solveRecursive("?###????????", null, new[] { 3, 2, 1 });
 
-        Assert.Fail("");
+        ans.Should().Be(10);
     }
 }
