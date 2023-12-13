@@ -4,6 +4,8 @@ namespace AdventOfCode.Solvers.Year2023.Day12;
 
 public class Day12Solver : BaseSolver
 {
+    private readonly Dictionary<string, int> _cache = new();
+    private double cacheHit = 0;
     public override void Solve(string[] puzzle)
     {
         var answer = 0;
@@ -13,14 +15,95 @@ public class Day12Solver : BaseSolver
             var ans = solveLine(line);
             answer += ans;
 
-            var ans2 = solveLineSmart(line);
+            var parts = line.Split(' ');
+
+            var numbers = parts[1].Split(',').Select(int.Parse).ToArray();
+            var ans2 = solveRecursive(parts[0], null, numbers);
 
             answer2 += ans2;
 
             logger.OnNext($"{line} - answer: {ans} answer2: {ans2}");
         }
+
+        logger.OnNext($"cache hit: {cacheHit} - {_cache.Count}"); 
         GiveAnswer1(answer);
         GiveAnswer2(answer2);
+    }
+
+    public int solveRecursive(string inp, int? remaining, int[] others)
+    {
+        var key = $"{inp} {remaining} {string.Join(',', others)}";
+        if (_cache.ContainsKey(key))
+        {
+            cacheHit++;
+            return _cache[key];
+        }
+
+        if (string.IsNullOrEmpty(inp) && (remaining != null || others.Length > 0))
+        {
+            _cache.Add(key, 0);
+            return _cache[key];
+        }
+
+        if (string.IsNullOrEmpty(inp))
+        {
+            return 1;
+        }
+
+        switch(inp[0])
+        {
+            case '#':
+                if (remaining == null)
+                {
+                    if (others.Length == 0)
+                    {
+                        _cache.Add(key, 0);
+                        return _cache[key];
+                    }
+                    remaining = others[0];
+                }
+
+                if (remaining == 0)
+                {
+                    _cache.Add(key, 0);
+                    return _cache[key];
+                }
+
+                _cache.Add(key, solveRecursive(inp[1..], remaining - 1, others));
+                return _cache[key];
+            case '.':
+                if (remaining != null &&  remaining > 0)
+                {
+                    _cache.Add(key, 0);
+                    return _cache[key];
+                }
+
+                _cache.Add(key, solveRecursive(inp[1..], null, others));
+                return _cache[key];
+            case '?':
+                if (remaining == null)
+                {
+                    if (others.Length > 0)
+                    {
+                        _cache.Add(key, solveRecursive(inp[1..], null, others) + solveRecursive(inp[1..], others[0] - 1, others[1..]));
+                        return _cache[key];
+                    }
+                    
+                    _cache.Add(key, solveRecursive(inp[1..], null, others));
+                    return _cache[key];
+                }
+
+                if (remaining == 0)
+                {
+                    _cache.Add(key, solveRecursive(inp[1..], null, others));
+                    return _cache[key];
+                }
+
+                _cache.Add(key, solveRecursive(inp[1..], remaining - 1, others));
+                return _cache[key];
+        }
+
+        throw new Exception("Should not happen");
     }
 
     public int solveLine(string line)
