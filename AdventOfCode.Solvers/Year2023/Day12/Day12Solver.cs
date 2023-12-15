@@ -16,6 +16,7 @@ public class Day12Solver : BaseSolver
             var numbers = parts[1].Split(',').Select(int.Parse).ToArray();
 
             var ans = solveRecursive(parts[0], null, numbers);
+            // var ans = solveLine(line);
             answer += ans;
 
             var bigline =
@@ -24,6 +25,8 @@ public class Day12Solver : BaseSolver
             numbers = parts[1].Split(',').Select(int.Parse).ToArray();
 
             var ans2 = solveRecursive(parts[0], null, numbers);
+            // if (ans != ans2)
+            //     throw new Exception($"Wrong answer for line {line} answer: {ans} answer2: {ans2}");
             answer2 += ans2;
 
             logger.OnNext($"{line} - answer: {ans} answer2: {ans2}");
@@ -31,10 +34,10 @@ public class Day12Solver : BaseSolver
 
         logger.OnNext($"cache hit: {cacheHit} - {_cache.Count}");
 
-        // foreach(var c in _cache)
-        // {
-        //     logger.OnNext($"{c.Key} - {c.Value}");
-        // }
+        foreach(var c in _cache)
+        {
+            logger.OnNext($"{c.Key} - {c.Value}");
+        }
 
         GiveAnswer1(answer);
         GiveAnswer2(answer2);
@@ -42,7 +45,7 @@ public class Day12Solver : BaseSolver
 
     public int solveRecursive(string inp, int? remaining, int[] others)
     {
-        var key = $"{inp} {remaining} {string.Join(',', others)}";
+        var key = $"{inp} ({remaining}) {string.Join(',', others)}";
         if (_cache.ContainsKey(key))
         {
             cacheHit++;
@@ -61,7 +64,7 @@ public class Day12Solver : BaseSolver
         {
             if (inp[0] == '#')
             {
-                if (remaining == 1 || (others.Length == 1 && others[0] == 1))
+                if ((remaining == 1 && others.Length == 0) || (remaining == null && others.Length == 1 && others[0] == 1))
                 {
                     _cache.Add(key, 1);
                     // logger.OnNext($"cache: {key} - value: {_cache[key]}");
@@ -213,7 +216,7 @@ public class Day12Solver : BaseSolver
         double middle = solveLine($"?{parts[0]}? {parts[1]}");
         double end = solveLine($"?{parts[0]} {parts[1]}");
 
-        logger.OnNext($"first: {first} middle: {middle} end: {end}");
+        // logger.OnNext($"first: {first} middle: {middle} end: {end}");
 
         if (parts[0].EndsWith("#"))
         {

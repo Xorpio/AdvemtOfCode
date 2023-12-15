@@ -57,11 +57,15 @@ public class Day12SolverTest
     {
         var lines = example.Split(Environment.NewLine);
 
+
         var solver = new Day12Solver();
 
         solver.Logger.Subscribe(msg => _output.WriteLine(msg));
 
-        var ans = solver.solveRecursive("?###????????", null, new[] { 3, 2, 1 });
+// .#???#?.?? (1) 1 - 0
+
+
+        var ans = solver.solveRecursive("???#?.??", 1, new[] { 1 });
 
         ans.Should().Be(10);
     }
