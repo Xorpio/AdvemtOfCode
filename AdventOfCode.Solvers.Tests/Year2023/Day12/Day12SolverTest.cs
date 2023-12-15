@@ -51,22 +51,4 @@ public class Day12SolverTest
 
         answer.Should().Be("525152");
     }
-
-    [Fact]
-    public void testLine()
-    {
-        var lines = example.Split(Environment.NewLine);
-
-
-        var solver = new Day12Solver();
-
-        solver.Logger.Subscribe(msg => _output.WriteLine(msg));
-
-// .#???#?.?? (1) 1 - 0
-
-
-        var ans = solver.solveRecursive("???#?.??", 1, new[] { 1 });
-
-        ans.Should().Be(10);
-    }
 }
