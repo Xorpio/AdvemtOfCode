@@ -2,7 +2,7 @@
   "profiles": {
     "PuzzleConsole": {
       "commandName": "Project",
-      "commandLineArgs": "C:/Users/xorpi/Downloads/2023/day8.txt -y 2023 -d 8"
+      "commandLineArgs": "C:\\Users\\ITWNG01\\Downloads\\input.txt -y 2023 -d 16"
     }
   }
 }
