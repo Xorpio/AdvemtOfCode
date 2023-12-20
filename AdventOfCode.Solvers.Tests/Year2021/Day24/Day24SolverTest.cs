@@ -191,4 +191,15 @@ public class Day24SolverTest
     //     alu.X.Should().Be(0);
     //     alu.W.Should().Be(1);
     // }
+
+    [Fact]
+    public void test2()
+    {
+        string[] arr1 = [ "a", "b", "c"];
+        string[] arr2 = [ "k", "b", "c"];
+        string[] arr3 = [.. arr1];
+        arr3[0] = "k";
+
+        arr1.Should().BeEquivalentTo(arr1);
+    }
 }
