@@ -1,4 +1,4 @@
-
+using System.Diagnostics;
 using System.Runtime.Intrinsics.Arm;
 
 namespace AdventOfCode.Solvers.Year2023.Day17;
@@ -7,73 +7,119 @@ public class Day17Solver : BaseSolver
 {
     public override void Solve(string[] puzzle)
     {
+        Dictionary<Point, (Point p, int h)[]> graph = [];
+        for (var row = 0; row < puzzle.Length; row++)
+        {
+            var line = puzzle[row];
+            for (var col = 0; col < line.Length; col++)
+            {
+                var neighbours = new List<(Point p, int h)>();
+                int i = 1;
+                var h = 0;
+                //go east
+                if (col + i < line.Length)
+                {
+                    h += int.Parse(line[col + i].ToString());
+                    neighbours.Add((new Point(row, col + i), h));
+                }
+                //go south
+                h = 0;
+                    if (row + i < puzzle.Length)
+                    {
+                        h += int.Parse(puzzle[row + i][col].ToString());
+                        neighbours.Add((new Point(row + i, col), h));
+                    }
+                //go west
+                h = 0;
+                    if (col - i >= 0)
+                    {
+                        h += int.Parse(line[col - i].ToString());
+                        neighbours.Add((new Point(row, col - i), h));
+                    }
+                //go north
+                h = 0;
+                    if (row - i >= 0)
+                    {
+                        h += int.Parse(puzzle[row - i][col].ToString());
+                        neighbours.Add((new Point(row - i, col), h));
+                    }
 
-        List<(Point point, double heat, string path)> visited = new();
-        List<(Point point, double heat, string path)> potential = new();
+                graph.Add(new Point(row, col), neighbours.ToArray());
+            }
+        }
 
         var start = new Point(0, 0);
         var end = new Point(puzzle.Length - 1, puzzle[0].Length - 1);
 
-        potential.Add((start, 0, ""));
+        PriorityQueue<Point, int> queue = new();
+        queue.Enqueue(start, 0);
+        Dictionary<Point, (Point? p, string path)> visited = new();
+        visited.Add(start, (null, "---"));
+        Dictionary<(Point point, string path), int> score = new();
+        score.Add((start, "---"), 0);
 
-        (Point point, double heat, string path) next = default;
-
-        var score = double.MaxValue;
-        
-        var count = 0;
-        do
+        while (queue.Count > 0)
         {
-            if (potential.Count == 0)
+            var current = queue.Dequeue();
+
+            if (current == end)
             {
                 break;
             }
-            next = potential.OrderBy(x => x.heat + ((x.point + end) * 9)).First();
 
-            potential.Remove(next);
-            
-            if (next.heat > score)
+            foreach(var node in graph[current])
             {
-                continue;
+                var newPath = visited[current].path;
+
+                if (current.row > node.p.row)
+                {
+                    newPath += "N";
+                }
+                else if (current.row < node.p.row)
+                {
+                    newPath += "S";
+                }
+                else if (current.col > node.p.col)
+                {
+                    newPath += "W";
+                }
+                else if (current.col < node.p.col)
+                {
+                    newPath += "E";
+                }
+
+                if (newPath[1..] == "NNN" || newPath[1..] == "SSS" || newPath[1..] == "EEE" || newPath[1..] == "WWW")
+                {
+                    continue;
+                }
+
+                var newHeat = score[(current, visited[current].path)] + node.h;
+
+                if (!score.ContainsKey((node.p, newPath)) || newHeat < score[(node.p, newPath)])
+                {
+                    score[(node.p, newPath[1..])] = newHeat;
+                    queue.Enqueue(node.p, newHeat + (node.p + end));
+                    visited[node.p] = (current, newPath[1..]);
+                }
+            }
+        }
+
+        var answer = score.First(p => p.Key.point == end).Value;
+
+        var v = end;
+        while (true)
+        {
+            if (v == start)
+            {
+                break;
             }
 
-            if (next.point.row < 0 || next.point.row >= puzzle.Length || next.point.col < 0 || next.point.col >= puzzle[0].Length)
-            {
-                continue;
-            }
+            logger.OnNext($"from {visited[v].p} to {v}");
+            v = visited.First(kv => kv.Key == v).Value.p;
+        }
 
-            if (next.point == end)
-            {
-                score = score > next.heat ? next.heat : score;
-                logger.OnNext($"Found path {next.path} with heat {next.heat}");
-                continue;
-            }
+        GiveAnswer1(answer);
 
-            var pathHistory = next.path.Length > 3 ? next.path[^3..] : next.path;
-            var last = next.path.Length > 0 ? next.path[^1] : ' ';
-
-            if (pathHistory != "NNN" && next.point.row > 0 && last != 'S')
-            {
-                potential.Add((new Point(next.point.row - 1, next.point.col), next.heat + int.Parse(puzzle[next.point.row -1][next.point.col].ToString()), next.path + "N"));
-            }
-            if (next.point.row < puzzle.Length - 1 && pathHistory != "SSS" && last != 'N')
-            {
-                potential.Add((new Point(next.point.row + 1, next.point.col), next.heat + int.Parse(puzzle[next.point.row + 1][next.point.col].ToString()), next.path + "S"));
-            }
-            if (pathHistory != "WWW" && next.point.col > 0 && last != 'E')
-            {
-                potential.Add((new Point(next.point.row, next.point.col - 1), next.heat + int.Parse(puzzle[next.point.row][next.point.col - 1].ToString()), next.path + "W"));
-            }
-            if (next.point.col < puzzle[0].Length - 1 && pathHistory != "EEE" && last != 'W')
-            {
-                potential.Add((new Point(next.point.row, next.point.col + 1), next.heat + int.Parse(puzzle[next.point.row][next.point.col + 1].ToString()), next.path + "E"));
-            }
-
-            potential.RemoveAll(x => x.heat > score);
-
-            count++;
-        }while (potential.Count > 0);
-
-        GiveAnswer1(score);
         GiveAnswer2("");
     }
 }
