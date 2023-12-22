@@ -7,65 +7,73 @@ public class Day17Solver : BaseSolver
 {
     public override void Solve(string[] puzzle)
     {
-        Point start = new(0, 0);
-        Point end = new(puzzle.Length - 1, puzzle[0].Length - 1);
 
-        Dictionary<(Point p, string steps), int> visited = [];
-        List<(Point c, string Steps, int heat)> potential = [];
+        List<(Point point, double heat, string path)> visited = new();
+        List<(Point point, double heat, string path)> potential = new();
 
-        potential.Add((start, "-", 0));
-        potential.Add((start, "|", 0));
+        var start = new Point(0, 0);
+        var end = new Point(puzzle.Length - 1, puzzle[0].Length - 1);
 
+        potential.Add((start, 0, ""));
+
+        (Point point, double heat, string path) next = default;
+
+        var score = double.MaxValue;
+        
+        var count = 0;
         do
         {
-            var current = potential.OrderBy(p => p.heat + (p.c + end)).First();
-            potential.Remove(current);
+            if (potential.Count == 0)
+            {
+                break;
+            }
+            next = potential.OrderBy(x => x.heat + ((x.point + end) * 9)).First();
 
-            if (!visited.TryAdd((current.c, current.Steps), current.heat))
+            potential.Remove(next);
+            
+            if (next.heat > score)
             {
                 continue;
             }
 
-            var directions = new List<(Point p, string s)>();
-
-            if (current.c == end)
+            if (next.point.row < 0 || next.point.row >= puzzle.Length || next.point.col < 0 || next.point.col >= puzzle[0].Length)
             {
-                GiveAnswer1(current.heat.ToString());
-                break;
+                continue;
             }
 
-            if (current.Steps != "---")
+            if (next.point == end)
             {
-                var newSteps = (current.Steps.Length > 0 && current.Steps[0] == '-') ?
-                    current.Steps + "-" :
-                    "-";
-
-                directions.Add((current.c with { col = current.c.col + 1 }, newSteps));
-                directions.Add((current.c with { col = current.c.col - 1 }, newSteps));
-            }
-            if (current.Steps != "|||")
-            {
-                var newSteps = (current.Steps.Length > 0 && current.Steps[0] == '|') ?
-                    current.Steps + "|" :
-                    "|";
-
-                directions.Add((current.c with { row = current.c.row + 1 }, newSteps));
-                directions.Add((current.c with { row = current.c.row - 1 }, newSteps));
+                score = score > next.heat ? next.heat : score;
+                logger.OnNext($"Found path {next.path} with heat {next.heat}");
+                continue;
             }
 
-            foreach (var d in directions)
+            var pathHistory = next.path.Length > 3 ? next.path[^3..] : next.path;
+            var last = next.path.Length > 0 ? next.path[^1] : ' ';
+
+            if (pathHistory != "NNN" && next.point.row > 0 && last != 'S')
             {
-                if (!visited.ContainsKey((d.p, d.s))
-                    && d.p.col >= 0 && d.p.col < puzzle[0].Length && d.p.row >= 0 && d.p.row < puzzle.Length
-                    )
-                {
-                    potential.Add((d.p, d.s, current.heat + int.Parse(puzzle[d.p.row][d.p.col].ToString())));
-                }
+                potential.Add((new Point(next.point.row - 1, next.point.col), next.heat + int.Parse(puzzle[next.point.row -1][next.point.col].ToString()), next.path + "N"));
+            }
+            if (next.point.row < puzzle.Length - 1 && pathHistory != "SSS" && last != 'N')
+            {
+                potential.Add((new Point(next.point.row + 1, next.point.col), next.heat + int.Parse(puzzle[next.point.row + 1][next.point.col].ToString()), next.path + "S"));
+            }
+            if (pathHistory != "WWW" && next.point.col > 0 && last != 'E')
+            {
+                potential.Add((new Point(next.point.row, next.point.col - 1), next.heat + int.Parse(puzzle[next.point.row][next.point.col - 1].ToString()), next.path + "W"));
+            }
+            if (next.point.col < puzzle[0].Length - 1 && pathHistory != "EEE" && last != 'W')
+            {
+                potential.Add((new Point(next.point.row, next.point.col + 1), next.heat + int.Parse(puzzle[next.point.row][next.point.col + 1].ToString()), next.path + "E"));
             }
 
-        } while (potential.Any());
+            potential.RemoveAll(x => x.heat > score);
 
-        GiveAnswer1("");
+            count++;
+        }while (potential.Count > 0);
+
+        GiveAnswer1(score);
         GiveAnswer2("");
     }
 }

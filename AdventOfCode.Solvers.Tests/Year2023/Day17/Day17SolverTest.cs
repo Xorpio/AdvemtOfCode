@@ -57,4 +57,15 @@ public class Day17SolverTest
         var answer = await solver.Answer2.LastAsync();
 
         answer.Should().Be("?");
-    }}
+    }
+
+    [Fact]
+    public void test2()
+    {
+        var ex = "-|";
+        
+        var expected = "--|";
+
+        ex[^3..].Should().Be(expected);
+    }
+}

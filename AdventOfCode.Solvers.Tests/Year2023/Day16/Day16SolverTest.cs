@@ -1,4 +1,5 @@
-﻿using AdventOfCode.Solvers.Year2023.Day16;
+﻿using System.Xml.Xsl;
+using AdventOfCode.Solvers.Year2023.Day16;
 
 namespace AdventOfCode.Solvers.Tests.Year2023.Day16;
 
@@ -54,4 +55,5 @@ public class Day16SolverTest
         var answer = await solver.Answer2.LastAsync();
 
         answer.Should().Be("51");
-    }}
+    }
+}
