@@ -58,14 +58,4 @@ public class Day17SolverTest
 
         answer.Should().Be("?");
     }
-
-    [Fact]
-    public void test2()
-    {
-        var ex = "-|";
-        
-        var expected = "--|";
-
-        ex[^3..].Should().Be(expected);
-    }
 }
