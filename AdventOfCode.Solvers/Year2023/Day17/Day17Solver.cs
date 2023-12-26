@@ -64,7 +64,7 @@ public class Day17Solver : BaseSolver
                         if (!history.ContainsKey((up, "^")) || history[(up, "^")].heat > heatUp)
                         {
                             history[(up, "^")] = (nextPoint, nextDir, heatUp);
-                            queue.Enqueue((up, "^"), heatUp);
+                            queue.Enqueue((up, "^"), heatUp + (up + end));
                         }
                     }
 
@@ -75,7 +75,7 @@ public class Day17Solver : BaseSolver
                         if (!history.ContainsKey((down, "V")) || history[(down, "V")].heat > heatDown)
                         {
                             history[(down, "V")] = (nextPoint, nextDir, heatDown);
-                            queue.Enqueue((down, "V"), heatDown);
+                            queue.Enqueue((down, "V"), heatDown + (down + end));
                         }
                     }
                 }
@@ -94,7 +94,7 @@ public class Day17Solver : BaseSolver
                         if (!history.ContainsKey((left, "<")) || history[(left, "<")].heat > heatLeft)
                         {
                             history[(left, "<")] = (nextPoint, nextDir, heatLeft);
-                            queue.Enqueue((left, "<"), heatLeft);
+                            queue.Enqueue((left, "<"), heatLeft + (left + end));
                         }
                     }
 
@@ -105,7 +105,7 @@ public class Day17Solver : BaseSolver
                         if (!history.ContainsKey((right, ">")) || history[(right, ">")].heat > heatRight)
                         {
                             history[(right, ">")] = (nextPoint, nextDir, heatRight);
-                            queue.Enqueue((right, ">"), heatRight);
+                            queue.Enqueue((right, ">"), heatRight + (right + end));
                         }
                     }
                 }
@@ -128,7 +128,124 @@ public class Day17Solver : BaseSolver
             logger.OnNext(new string(row));
         }
 
-        GiveAnswer2(0);
+        queue = new();
+        visited = new();
+        history = new();
+
+        queue.Enqueue((start, "V"), 0);
+        queue.Enqueue((start, ">"), 0);
+
+        history[(start, "V")] = (start, "V", 0);
+        history[(start, ">")] = (start, ">", 0);
+
+        while(queue.Count > 0)
+        {
+            var (nextPoint, nextDir) = queue.Dequeue();
+            var currentHeat = history[(nextPoint, nextDir)].heat;
+
+            if (visited.Contains((nextPoint, nextDir)))
+            {
+                continue;
+            }
+
+            visited.Add((nextPoint, nextDir));
+
+            if (nextPoint == end)
+            {
+                break;
+            }
+
+            if (nextDir == ">" || nextDir == "<") 
+            {
+                int heatUp = currentHeat;
+                int heatDown = currentHeat;
+                for (int i = 1; i < 4; i++)
+                {
+                    var up = nextPoint with { row = nextPoint.row - i };
+                    if (up.row >= 0)
+                    {
+                        heatUp += grid[up.row, up.col];
+                    }
+
+                    var down = nextPoint with { row = nextPoint.row + i };
+                    if (down.row < grid.GetLength(0))
+                    {
+                        heatDown += grid[down.row, down.col];
+                    }
+                }
+                for (int i = 4; i < 11; i++)
+                {
+                    var up = nextPoint with { row = nextPoint.row - i };
+                    if (up.row >= 0)
+                    {
+                        heatUp += grid[up.row, up.col];
+                        if (!history.ContainsKey((up, "^")) || history[(up, "^")].heat > heatUp)
+                        {
+                            history[(up, "^")] = (nextPoint, nextDir, heatUp);
+                            queue.Enqueue((up, "^"), heatUp + (up + end));
+                        }
+                    }
+
+                    var down = nextPoint with { row = nextPoint.row + i };
+                    if (down.row < grid.GetLength(0))
+                    {
+                        heatDown += grid[down.row, down.col];
+                        if (!history.ContainsKey((down, "V")) || history[(down, "V")].heat > heatDown)
+                        {
+                            history[(down, "V")] = (nextPoint, nextDir, heatDown);
+                            queue.Enqueue((down, "V"), heatDown + (down + end));
+                        }
+                    }
+                }
+            }
+
+            if (nextDir == "^" || nextDir == "V")
+            {
+                int heatLeft = currentHeat;
+                int heatRight = currentHeat;
+                for (int i = 1; i < 4; i++)
+                {
+                    var left = nextPoint with { col = nextPoint.col - i };
+                    if (left.col >= 0)
+                    {
+                        heatLeft += grid[left.row, left.col];
+                    }
+
+                    var right = nextPoint with { col = nextPoint.col + i };
+                    if (right.col < grid.GetLength(1))
+                    {
+                        heatRight += grid[right.row, right.col];
+                    }
+                }
+                for (int i = 4; i < 11; i++)
+                {
+                    var left = nextPoint with { col = nextPoint.col - i };
+                    if (left.col >= 0)
+                    {
+                        heatLeft += grid[left.row, left.col];
+                        if (!history.ContainsKey((left, "<")) || history[(left, "<")].heat > heatLeft)
+                        {
+                            history[(left, "<")] = (nextPoint, nextDir, heatLeft);
+                            queue.Enqueue((left, "<"), heatLeft + (left + end));
+                        }
+                    }
+
+                    var right = nextPoint with { col = nextPoint.col + i };
+                    if (right.col < grid.GetLength(1))
+                    {
+                        heatRight += grid[right.row, right.col];
+                        if (!history.ContainsKey((right, ">")) || history[(right, ">")].heat > heatRight)
+                        {
+                            history[(right, ">")] = (nextPoint, nextDir, heatRight);
+                            queue.Enqueue((right, ">"), heatRight + (right + end));
+                        }
+                    }
+                }
+            }
+        }
+
+        key = history.OrderBy(kv => kv.Value.heat).First(x => x.Key.point == end).Key;
+        GiveAnswer2(history[key].heat);
     }
 }
 
