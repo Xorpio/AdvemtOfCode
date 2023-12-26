@@ -1,5 +1,7 @@
 using System.Collections.Specialized;
+using System.Data;
 using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
 using System.Xml;
@@ -10,205 +12,123 @@ public class Day17Solver : BaseSolver
 {
     public override void Solve(string[] puzzle)
     {
-        Dictionary<(Point point, string dir), (Point p, string d, int h)[]> graph = [];
-        var intPuzzle = puzzle.Select(l => l.ToArray().Select(c => int.Parse(c.ToString())).ToArray()).ToArray();
-        for (var row = 0; row < puzzle.Length; row++)
+        int[,] grid = new int[puzzle.Length, puzzle[0].Length];
+        for (int row = 0; row < puzzle.Length; row++)
         {
-            var line = intPuzzle[row];
-            for (var col = 0; col < line.Length; col++)
+            for (int col = 0; col < puzzle[0].Length; col++)
             {
-                for (int dir = 0; dir < 4; dir++)
-                {
-                    var wind = dir switch
-                    {
-                        0 => "NE",
-                        1 => "NW",
-                        2 => "SE",
-                        3 => "SW",
-                        _ => throw new Exception()
-                    };
-
-                    var neighbours = new List<(Point p, string d, int h)>();
-
-                    int h = 0;
-                    if (wind == "NE" || wind == "SE")
-                    {
-                        h = 0;
-                        for(int i = 1; i < 4; i++)
-                        {
-                            //go east
-                            if (col + i < line.Length)
-                            {
-                                h += line[col + i];
-                                neighbours.Add((new Point(row, col + i), "NW", h));
-                                neighbours.Add((new Point(row, col + i), "SW", h));
-                            }
-                        }
-                    }
-                    if (wind == "SE" || wind == "SW")
-                    {
-                        //go south
-                        h = 0;
-                        for(int i = 1; i < 4; i++)
-                        {
-                            if (row + i < intPuzzle.Length)
-                            {
-                                h += intPuzzle[row + i][col];
-                                neighbours.Add((new Point(row + i, col), "NE", h));
-                                neighbours.Add((new Point(row + i, col), "NW", h));
-                            }
-                        }
-                    }
-                    if (wind == "NW" || wind == "SW")
-                    {
-                        //go west
-                        h = 0;
-                        for(int i = 1; i < 4; i++)
-                        {
-                            if (col - i >= 0)
-                            {
-                                h += line[col - i];
-                                neighbours.Add((new Point(row, col - i), "NE", h));
-                                neighbours.Add((new Point(row, col - i), "SE", h));
-                            }
-                        }
-                    }
-                    if (wind == "NE" || wind == "NW")
-                    {
-                        //go north
-                        h = 0;
-                        for(int i = 1; i < 4; i++)
-                        {
-                            if (row - i >= 0)
-                            {
-                                h += intPuzzle[row - i][col];
-                                neighbours.Add((new Point(row - i, col), "SE", h));
-                                neighbours.Add((new Point(row - i, col), "SW", h));
-                            }
-                        }
-                    }
-
-                    graph.Add((new Point(row, col), wind), neighbours.ToArray());
-                }
+                grid[row, col] = int.Parse(puzzle[row][col].ToString());
             }
         }
-
-        var start = new Point(0, 0);
-        var end = new Point(puzzle.Length - 1, puzzle[0].Length - 1);
 
         PriorityQueue<(Point point, string dir), int> queue = new();
-        queue.Enqueue((start, "SE"), start + end);
-        Dictionary<(Point point, string dir), (Point p, string dir)> visited = new();
-        Dictionary<(Point point, string dir), int> score = new()
-        {
-            { (start, "SE"), 0 }
-        };
+        List<(Point point, string dir)> visited = new();
+        Dictionary<(Point point, string dir), (Point point, string dir, int heat)> history = new();
 
-        while (queue.Count > 0)
-        {
-            var current = queue.Dequeue();
+        var start = new Point(0, 0);
+        var end = new Point(grid.GetLength(0) - 1, grid.GetLength(1) - 1);
 
-            if (current.point == end)
+        queue.Enqueue((start, "V"), 0);
+        queue.Enqueue((start, ">"), 0);
+
+        history[(start, "V")] = (start, "V", 0);
+        history[(start, ">")] = (start, ">", 0);
+
+        while(queue.Count > 0)
+        {
+            var (nextPoint, nextDir) = queue.Dequeue();
+            var currentHeat = history[(nextPoint, nextDir)].heat;
+
+            if (visited.Contains((nextPoint, nextDir)))
+            {
+                continue;
+            }
+
+            visited.Add((nextPoint, nextDir));
+
+            if (nextPoint == end)
             {
                 break;
             }
 
-            foreach(var node in graph[current])
+            if (nextDir == ">" || nextDir == "<") 
             {
-                // var newPath = visited[current].path;
-
-                // if (current.row > node.p.row)
-                // {
-                //     newPath += "N";
-                // }
-                // else if (current.row < node.p.row)
-                // {
-                //     newPath += "S";
-                // }
-                // else if (current.col > node.p.col)
-                // {
-                //     newPath += "W";
-                // }
-                // else if (current.col < node.p.col)
-                // {
-                //     newPath += "E";
-                // }
-
-                // if (newPath[1..] == "NNN" || newPath[1..] == "SSS" || newPath[1..] == "EEE" || newPath[1..] == "WWW")
-                // {
-                //     continue;
-                // }
-
-                var newHeat = score[current] + node.h;
-
-                if (!score.ContainsKey((node.p, node.d)) || newHeat < score[(node.p, node.d)])
+                int heatUp = currentHeat;
+                int heatDown = currentHeat;
+                for (int i = 1; i < 4; i++)
                 {
-                    score[(node.p, node.d)] = newHeat;
-                    queue.Enqueue((node.p, node.d), newHeat + (node.p + end));
-                    visited[(node.p, node.d)] = current;
+                    var up = nextPoint with { row = nextPoint.row - i };
+                    if (up.row >= 0)
+                    {
+                        heatUp += grid[up.row, up.col];
+                        if (!history.ContainsKey((up, "^")) || history[(up, "^")].heat > heatUp)
+                        {
+                            history[(up, "^")] = (nextPoint, nextDir, heatUp);
+                            queue.Enqueue((up, "^"), heatUp);
+                        }
+                    }
+
+                    var down = nextPoint with { row = nextPoint.row + i };
+                    if (down.row < grid.GetLength(0))
+                    {
+                        heatDown += grid[down.row, down.col];
+                        if (!history.ContainsKey((down, "V")) || history[(down, "V")].heat > heatDown)
+                        {
+                            history[(down, "V")] = (nextPoint, nextDir, heatDown);
+                            queue.Enqueue((down, "V"), heatDown);
+                        }
+                    }
+                }
+            }
+
+            if (nextDir == "^" || nextDir == "V")
+            {
+                int heatLeft = currentHeat;
+                int heatRight = currentHeat;
+                for (int i = 1; i < 4; i++)
+                {
+                    var left = nextPoint with { col = nextPoint.col - i };
+                    if (left.col >= 0)
+                    {
+                        heatLeft += grid[left.row, left.col];
+                        if (!history.ContainsKey((left, "<")) || history[(left, "<")].heat > heatLeft)
+                        {
+                            history[(left, "<")] = (nextPoint, nextDir, heatLeft);
+                            queue.Enqueue((left, "<"), heatLeft);
+                        }
+                    }
+
+                    var right = nextPoint with { col = nextPoint.col + i };
+                    if (right.col < grid.GetLength(1))
+                    {
+                        heatRight += grid[right.row, right.col];
+                        if (!history.ContainsKey((right, ">")) || history[(right, ">")].heat > heatRight)
+                        {
+                            history[(right, ">")] = (nextPoint, nextDir, heatRight);
+                            queue.Enqueue((right, ">"), heatRight);
+                        }
+                    }
                 }
             }
         }
 
-        var answer = score.First(p => p.Key.point == end).Value;
+        var charPuzzle = puzzle.Select(x => x.ToCharArray()).ToArray();
 
-        List<(Point pf, string df, Point pt, string dt)> path = new();
-        var v = score.First(p => p.Key.point == end).Key;
-        while (true)
+        var key = history.OrderBy(kv => kv.Value.heat).First(x => x.Key.point == end).Key;
+        GiveAnswer1(history[key].heat);
+        while(key.point != start)
         {
-            if (v.point == start)
-            {
-                break;
-            }
-
-            logger.OnNext($"from {visited[v]} to {v}");
-
-            path.Add((visited[v].p, visited[v].dir, v.point, v.dir));   
-
-            v = visited[v];
+            logger.OnNext($"{key} {history[key]}");
+            charPuzzle[history[key].point.row][history[key].point.col] = key.dir[0];
+            key = (history[key].point, history[key].dir);
         }
 
-        var charPuzzle = puzzle.Select(l => l.ToArray()).ToArray();
-        foreach(var p in path)
+        foreach(var row in charPuzzle)
         {
-            if (p.pf.row > p.pt.row)
-            {
-                for(int row = p.pf.row; row > p.pt.row; row--)
-                {
-                    charPuzzle[row][p.pf.col] = '^';
-                }
-            }
-            if (p.pf.row < p.pt.row)
-            {
-                for(int row = p.pf.row; row < p.pt.row; row++)
-                {
-                    charPuzzle[row][p.pf.col] = 'v';
-                }
-            }
-            if (p.pf.col > p.pt.col)
-            {
-                for(int col = p.pf.col; col > p.pt.col; col--)
-                {
-                    charPuzzle[p.pf.row][col] = '<';
-                }
-            }
-            if (p.pf.col < p.pt.col)
-            {
-                for(int col = p.pf.col; col < p.pt.col; col++)
-                {
-                    charPuzzle[p.pf.row][col] = '>';
-                }
-            }
+            logger.OnNext(new string(row));
         }
 
-        foreach(var line in charPuzzle)
-        {
-            logger.OnNext(new string(line));
-        }
-
-        GiveAnswer1(answer);
-
-        GiveAnswer2("");
+        GiveAnswer2(0);
     }
 }
 
