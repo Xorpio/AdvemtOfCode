@@ -58,4 +58,5 @@ public class Day18SolverTest
         var answer = await solver.Answer2.LastAsync();
 
         answer.Should().Be("952408144115");
-    }}
+    }
+}
