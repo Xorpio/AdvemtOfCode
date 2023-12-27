@@ -7,86 +7,58 @@ public class Day18Solver : BaseSolver
     public override void Solve(string[] puzzle)
     {
         var pos = new Point(0, 0);
-        var points = new List<Point>();
+        var lines = new List<Line>();
+
         foreach(var line in puzzle)
         {
+            // parse line from color
             var parts = line.Split(' ');
-            for(int c = int.Parse(parts[1]); c > 0; c--)
+            switch(parts[0])
             {
-                switch(parts[0])
-                {
-                    case "R":
-                        pos = new Point(pos.row, pos.col + 1);
-                        break;
-                    case "L":
-                        pos = new Point(pos.row, pos.col - 1);
-                        break;
-                    case "U":
-                        pos = new Point(pos.row - 1, pos.col);
-                        break;
-                    case "D":
-                        pos = new Point(pos.row + 1, pos.col);
-                        break;
-                }
-                points.Add(pos);
+                case "R":
+                    lines.Add(new Line(pos, pos with { col = pos.col + int.Parse(parts[1]) }, true));
+                    pos = pos with { col = pos.col + int.Parse(parts[1]) };
+                    break;
+                case "L":
+                    lines.Add(new Line(pos with { col = pos.col - int.Parse(parts[1]) }, pos, true));
+                    pos = pos with { col = pos.col - int.Parse(parts[1]) };
+                    break;
+                case "U":
+                    lines.Add(new Line(pos with { row = pos.row - int.Parse(parts[1]) }, pos, false));
+                    pos = pos with { row = pos.row - int.Parse(parts[1]) };
+                    break;
+                case "D":
+                    lines.Add(new Line(pos, pos with { row = pos.row + int.Parse(parts[1]) }, false));
+                    pos = pos with { row = pos.row + int.Parse(parts[1]) };
+                    break;
             }
         }
 
-        var minRow = points.Min(p => p.row) - 1;
-        var maxRow = points.Max(p => p.row) + 1;
-        var minCol = points.Min(p => p.col) - 1;
-        var maxCol = points.Max(p => p.col) + 1;
-
-        var seen = new List<Point>();
-        var queu = new Queue<Point>();
-        queu.Enqueue(new Point(minRow, minCol));
-        while (queu.Any())
+        foreach(var l in lines)
         {
-            var current = queu.Dequeue();
-
-            if (seen.Contains(current) || points.Contains(current) || current.row < minRow || current.row > maxRow || current.col < minCol || current.col > maxCol)
-            {
-                continue;
-            }
-
-            seen.Add(current);
-
-            queu.Enqueue(new Point(current.row + 1, current.col));
-            queu.Enqueue(new Point(current.row - 1, current.col));
-            queu.Enqueue(new Point(current.row, current.col + 1));
-            queu.Enqueue(new Point(current.row, current.col - 1));
+            logger.OnNext($"{l}");
         }
 
-        for(int row = minRow; row <= maxRow; row++)
+        double count = 0;
+
+        var row = lines.Min(l => l.start.row) - 1;
+        var endRow = lines.Max(l => l.end.row);
+
+
+        logger.OnNext($"startRow: {row}");
+        logger.OnNext($"endRow: {endRow}");
+
+        while(row <= endRow)
         {
-            var line = "";
-            for(int col = minCol; col <= maxCol; col++)
-            {
-                if (points.Contains(new Point(row, col)))
-                {
-                    line += "#";
-                }
-                else if (seen.Contains(new Point(row, col)))
-                {
-                    line += ".";
-                }
-                else
-                {
-                    line += " ";
-                }
-            }
-            // logger.OnNext(line);
+            // find all lines that intersect with this row
+
+            row++;
         }
 
-        double gridSize = (maxRow - minRow + 1) * (maxCol - minCol + 1);    
-        logger.OnNext($"grid row size = {maxRow - minRow + 1}");
-        logger.OnNext($"grid col size = {maxCol - minCol + 1}");
-        logger.OnNext($"seen: {seen.Count}");
-        double answer1 = gridSize - seen.Count;
-
-        GiveAnswer1(answer1);
+        GiveAnswer1("");
         GiveAnswer2("");
     }
 }
 
 public record Point(int row, int col);
+public record Line(Point start, Point end, bool horizontal);
