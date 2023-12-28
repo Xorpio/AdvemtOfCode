@@ -1,3 +1,4 @@
+using System.IO.IsolatedStorage;
 using System.Reflection.Metadata;
 
 namespace AdventOfCode.Solvers.Year2023.Day18;
@@ -6,15 +7,22 @@ public class Day18Solver : BaseSolver
 {
     public override void Solve(string[] puzzle)
     {
-        var output = new Dictionary<Point, char>();
+        var count = SolvePart(true, puzzle);
+
+        GiveAnswer1(count);
+        count = SolvePart(false, puzzle);
+        GiveAnswer2(count);
+    }
+
+    public double SolvePart(bool isOne, string[] puzzle)
+    {
         var pos = new Point(0, 0);
         var lines = new List<Line>();
         var corners = new List<Point>();
 
         foreach(var line in puzzle)
         {
-            // parse line from color
-            var parts = line.Split(' ');
+            var parts = isOne ? line.Split(' ') : GetParts2(line);
             switch(parts[0])
             {
                 case "R":
@@ -40,7 +48,7 @@ public class Day18Solver : BaseSolver
 
         foreach(var l in lines)
         {
-            logger.OnNext($"{l}");
+            // logger.OnNext($"{l}");
         }
 
         double count = 0;
@@ -51,8 +59,8 @@ public class Day18Solver : BaseSolver
         double starCol = lines.Min(l => l.start.col);
         double endCol = lines.Max(l => l.end.col);
 
-        logger.OnNext($"startRow: {row}");
-        logger.OnNext($"endRow: {endRow}");
+        // logger.OnNext($"startRow: {row}");
+        // logger.OnNext($"endRow: {endRow}");
 
         List<(double start, double end)> blocks = [];
 
@@ -62,17 +70,10 @@ public class Day18Solver : BaseSolver
         var startBlock = true;
         while (rowNum <= endRow)
         {
-            logger.OnNext($"rowNum: {row} to {rowNum - 1}");
+            // logger.OnNext($"rowNum: {row} to {rowNum - 1}");
             foreach(var block in blocks)
             {
                 count += (block.end - block.start + 1) * (rowNum - row);
-                for(var r = row; r < rowNum; r++)
-                {
-                    for(var c = block.start; c <= block.end; c++)
-                    {
-                        output.Add(new (r, c), '#');
-                    }
-                }
             }
 
             blocks.Clear();
@@ -118,8 +119,8 @@ public class Day18Solver : BaseSolver
                     var line2 = lines.Where(l => !l.horizontal && (new Point(rowNum, cols[i + 1]) == l.start || new Point(rowNum, cols[i + 1]) == l.end)).First();
                     if ((line1.start.row < rowNum && line2.start.row < rowNum) || (line1.end.row > rowNum && line2.end.row > rowNum))
                     {
-                        blocks[^1] = (blocks[^1].start, corner.col);
-                        blocks.Add((cols[i + 1], 0));
+                        // blocks[^1] = (blocks[^1].start, corner.col);
+                        // blocks.Add((cols[i + 1], 0));
                         i++;
                         continue;
                     } 
@@ -155,41 +156,32 @@ public class Day18Solver : BaseSolver
             }
         }
 
-        logger.OnNext($"{count}");
-
         foreach(var block in blocks)
         {
-            logger.OnNext($"{block}");
             count += block.end - block.start + 1;
-                for(var r = row; r < rowNum; r++)
-                {
-                    for(var c = block.start; c <= block.end; c++)
-                    {
-                        output.Add(new (r, c), '#');
-                    }
-                }
         }
 
-        for (var r = startRow; r <= endRow; r++)
+        return count;
+    }
+
+    private string[] GetParts2(string line)
+    {
+        var parts = line.Split('#');
+        var l = parts[1][..^1];
+
+         // parse l from hex to decimal
+        var count = Convert.ToInt32(l[..^1], 16);
+
+        var dir = l[^1] switch
         {
-            var line = "";
-            for (var c = starCol; c <= endCol; c++)
-            {
-                if (output.ContainsKey(new (r, c)))
-                {
-                    line += output[new (r, c)];
-                }
-                else
-                {
-                    line += '.';
-                }
-            }
+            '0' => "R",
+            '1' => "D",
+            '2' => "L",
+            '3' => "U",
+            _ => throw new Exception($"Unknown direction {l[^1]}")
+        };
 
-            logger.OnNext(line);
-        }
-
-        GiveAnswer1(count - 1);
-        GiveAnswer2("");
+        return [dir, count.ToString()];
     }
 
     private double[] FindCols(List<Line> lines, double rowNum)
