@@ -42,9 +42,6 @@ public class Day22SolverTest
     {
         var lines = example.Split(Environment.NewLine);
 
-        int i = int.MaxValue;
-        i = i + 1;
-
         var solver = new Day22Solver();
 
         solver.Logger.Subscribe(msg => _output.WriteLine(msg));
