@@ -7,6 +7,7 @@ public class Day2Solver : BaseSolver
     public override void Solve(string[] puzzle)
     {
         var safe = 0;
+        var safe2 = 0;
         foreach (var line in puzzle)
         {
             var numbers = line.Split(' ').Select(int.Parse).ToArray();
@@ -14,10 +15,25 @@ public class Day2Solver : BaseSolver
             if (isReportSafe(numbers))
             {
                 safe++;
+                safe2++;
+            }
+            else
+            {
+                //remove one number
+                for (int i = 0; i < numbers.Length; i++)
+                {
+                    var newNumbers = new List<int>(numbers);
+                    newNumbers.RemoveAt(i);
+                    if (isReportSafe(newNumbers.ToArray()))
+                    {
+                        safe2++;
+                        break;
+                    }
+                }
             }
         }
         GiveAnswer1(safe.ToString());
-        GiveAnswer2("");
+        GiveAnswer2(safe2.ToString());
     }
 
     private bool isReportSafe(int[] numbers)
