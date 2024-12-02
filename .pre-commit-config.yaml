@@ -1,0 +1,30 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+    - id: check-yaml
+      args: [--allow-multiple-documents]
+    - id: end-of-file-fixer
+    - id: trailing-whitespace
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+    - id: no-commit-to-branch
+      args: [--branch, develop, --branch, main, --branch, master]
+    - id: end-of-file-fixer
+    - id: trailing-whitespace
+  - repo: local
+    hooks:
+    #Use dotnet format already installed on your machine
+    -   id: dotnet-format
+        name: dotnet-format
+        language: system 
+        entry: dotnet format --include 
+        types_or: ["c#", "vb"]
+  # - repo: local
+  #   hooks:
+  #   -   id: dotnet-test
+  #       name: dotnet-test
+  #       language: system 
+  #       entry: dotnet test
+  #       stages: [pre-push]
