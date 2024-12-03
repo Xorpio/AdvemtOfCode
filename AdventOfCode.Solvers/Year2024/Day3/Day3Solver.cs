@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 
 namespace AdventOfCode.Solvers.Year2024.Day3;
@@ -6,9 +7,15 @@ public class Day3Solver : BaseSolver
 {
     public override void Solve(string[] puzzle)
     {
-        decimal x = 0;
 
         var input = string.Join(" ", puzzle);
+        GiveAnswer1(part1(input));
+
+        GiveAnswer2(part2(input));
+    }
+    public decimal part1(string input)
+    {
+        decimal x = 0;
         var match = Regex.Matches(input, @"(mul\(\d{1,3},\d{1,3}\))");
 
         foreach (var group in match)
@@ -18,15 +25,25 @@ public class Day3Solver : BaseSolver
             var b = int.Parse(split[1][..^1]);
             x += a * b;
         }
-        GiveAnswer1(x);
-
-        GiveAnswer2(part2(input));
+        return x;
     }
 
-    public int part2(string input)
+    public decimal part2(string input)
     {
-        var mulLoc = input.IndexOf("mul");
-        var dontLoc = input.IndexOf("don't()");
-        return 0;
+        decimal count = 0;
+
+        while (input.Contains("don't()"))
+        {
+            var inpBeforeDont = input[..input.IndexOf("don't()")];
+            input = input[input.IndexOf("don't()")..];
+            count += part1(inpBeforeDont);
+            if (input.Contains("do()"))
+                input = input[(input.IndexOf("do()") + 4)..];
+        }
+
+        logger.OnNext(input);
+        count += part1(input);
+
+        return count;
     }
 }

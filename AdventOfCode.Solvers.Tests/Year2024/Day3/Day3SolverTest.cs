@@ -10,7 +10,7 @@ public class Day3SolverTest
     xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))
     """;
     private string example2 = """
-    xdon't()mul(1,1)do()mul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))
+    xmul(2,4)&mul[3,7]!^don't()_mul(5,5)don't()+mul(32,64](mul(11,8)undo()?mul(8,5))
     """;
 
     public Day3SolverTest(ITestOutputHelper output)
