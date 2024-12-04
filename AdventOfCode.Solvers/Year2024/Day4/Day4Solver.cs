@@ -4,7 +4,8 @@ public class Day4Solver : BaseSolver
 {
     public override void Solve(string[] puzzle)
     {
-        decimal count = 0;
+        decimal countPart1 = 0;
+        decimal countPart2 = 0;
         for (int r = 0; r < puzzle.Length; r++)
         {
             for (int c = 0; c < puzzle[0].Length; c++)
@@ -18,7 +19,7 @@ public class Day4Solver : BaseSolver
                     puzzle[r][c + 3] == 'S'
                 )
                 {
-                    count++;
+                    countPart1++;
                 }
                 //right & Down
                 if (
@@ -29,7 +30,7 @@ public class Day4Solver : BaseSolver
                     puzzle[r + 3][c + 3] == 'S'
                 )
                 {
-                    count++;
+                    countPart1++;
                 }
                 // Down
                 if (
@@ -40,7 +41,7 @@ public class Day4Solver : BaseSolver
                     puzzle[r + 3][c] == 'S'
                 )
                 {
-                    count++;
+                    countPart1++;
                 }
                 // Down & Left
                 if (
@@ -51,7 +52,7 @@ public class Day4Solver : BaseSolver
                     puzzle[r + 3][c - 3] == 'S'
                 )
                 {
-                    count++;
+                    countPart1++;
                 }
                 // Left
                 if (
@@ -62,7 +63,7 @@ public class Day4Solver : BaseSolver
                     puzzle[r][c - 3] == 'S'
                 )
                 {
-                    count++;
+                    countPart1++;
                 }
 
                 // Left & Up
@@ -74,7 +75,7 @@ public class Day4Solver : BaseSolver
                     puzzle[r - 3][c - 3] == 'S'
                 )
                 {
-                    count++;
+                    countPart1++;
                 }
                 // Up
                 if (
@@ -85,7 +86,7 @@ public class Day4Solver : BaseSolver
                     puzzle[r - 3][c] == 'S'
                 )
                 {
-                    count++;
+                    countPart1++;
                 }
                 // Up & Right
                 if (
@@ -96,11 +97,72 @@ public class Day4Solver : BaseSolver
                     puzzle[r - 3][c + 3] == 'S'
                 )
                 {
-                    count++;
+                    countPart1++;
+                }
+
+                //up pos
+                // S.S
+                // .A.
+                // M.M
+                if (
+                    c > 0 && c < puzzle[0].Length - 1 && r > 0 && r < puzzle.Length - 1 &&
+                    puzzle[r][c] == 'A' &&
+                    puzzle[r - 1][c - 1] == 'S' &&
+                    puzzle[r - 1][c + 1] == 'S' &&
+                    puzzle[r + 1][c - 1] == 'M' &&
+                    puzzle[r + 1][c + 1] == 'M'
+                    )
+                {
+                    countPart2++;
+                }
+                //Left pos
+                // M.S
+                // .A.
+                // M.S
+                if (
+                    c > 0 && c < puzzle[0].Length - 1 && r > 0 && r < puzzle.Length - 1 &&
+                    puzzle[r][c] == 'A' &&
+                    puzzle[r - 1][c - 1] == 'M' &&
+                    puzzle[r - 1][c + 1] == 'S' &&
+                    puzzle[r + 1][c - 1] == 'M' &&
+                    puzzle[r + 1][c + 1] == 'S'
+                    )
+                {
+                    countPart2++;
+                }
+                //Right pos
+                // S.M
+                // .A.
+                // S.M
+                if (
+                    c > 0 && c < puzzle[0].Length - 1 && r > 0 && r < puzzle.Length - 1 &&
+                    puzzle[r][c] == 'A' &&
+                    puzzle[r - 1][c - 1] == 'S' &&
+                    puzzle[r - 1][c + 1] == 'M' &&
+                    puzzle[r + 1][c - 1] == 'S' &&
+                    puzzle[r + 1][c + 1] == 'M'
+                    )
+                {
+                    countPart2++;
+                }
+                //up pos
+                // M.M
+                // .A.
+                // S.S
+                if (
+                    c > 0 && c < puzzle[0].Length - 1 && r > 0 && r < puzzle.Length - 1 &&
+                    puzzle[r][c] == 'A' &&
+                    puzzle[r - 1][c - 1] == 'M' &&
+                    puzzle[r - 1][c + 1] == 'M' &&
+                    puzzle[r + 1][c - 1] == 'S' &&
+                    puzzle[r + 1][c + 1] == 'S'
+                    )
+                {
+                    countPart2++;
                 }
             }
         }
-        GiveAnswer1(count);
-        GiveAnswer2("");
+        GiveAnswer1(countPart1);
+        GiveAnswer2(countPart2);
     }
 }
