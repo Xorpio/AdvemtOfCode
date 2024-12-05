@@ -1,3 +1,4 @@
+using System.Runtime.ExceptionServices;
 using System.Security;
 
 namespace AdventOfCode.Solvers.Year2024.Day5;
@@ -9,6 +10,7 @@ public class Day5Solver : BaseSolver
         var lookup = new Dictionary<string, IList<string>>();
 
         var answer1 = 0;
+        var answer2 = 0;
 
         bool parsing = true;
         foreach(var line in puzzle)
@@ -36,11 +38,38 @@ public class Day5Solver : BaseSolver
                 {
                     answer1 += int.Parse(pages[(int)decimal.Floor(pages.Length / 2)]);
                 }
+                else
+                {
+                    pages = correctLine(pages, lookup);
+                    answer2 += int.Parse(pages[(int)decimal.Floor(pages.Length / 2)]);
+                }
             }
         }
 
         GiveAnswer1(answer1);
-        GiveAnswer2("");
+        GiveAnswer2(answer2);
+    }
+
+    private string[] correctLine(string[] pages, Dictionary<string, IList<string>> lookup)
+    {
+        var pageList = pages.ToList();
+        var newList = new List<string>();
+
+        var lookupBackup = lookup.ToDictionary(k => k.Key, v => v.Value.ToList());
+        while (pageList.Count > 1)
+        {
+            var item = pageList.Where(p => lookupBackup.Where(kv => pageList.Contains(kv.Key)).All(kv => !kv.Value.Contains(p)));
+            if (item.Count() > 1)
+                throw new Exception("Invalid input");
+
+            var i = item.First();
+            
+            pageList.Remove(i);  
+            newList.Add(i);
+            lookupBackup.Remove(i);
+        }
+
+        return newList.ToArray();
     }
 
     public bool validateLine(string[] lineParts, Dictionary<string, IList<string>> lookup)
