@@ -7,7 +7,16 @@ public class Day6SolverTest
     private readonly ITestOutputHelper _output;
 
     private string example = """
-    sampleinput
+    ....#.....
+    .........#
+    ..........
+    ..#.......
+    .......#..
+    ..........
+    .#..^.....
+    ........#.
+    #.........
+    ......#...
     """;
 
     public Day6SolverTest(ITestOutputHelper output)
@@ -28,7 +37,7 @@ public class Day6SolverTest
 
         var answer = await solver.Answer1.LastAsync();
 
-        answer.Should().Be("?");
+        answer.Should().Be("41");
     }
 
     [Fact(DisplayName = "2024 Day 6 Solver Has Correct Solution For Part 2 sample input")]
@@ -44,6 +53,6 @@ public class Day6SolverTest
 
         var answer = await solver.Answer2.LastAsync();
 
-        answer.Should().Be("?");
+        answer.Should().Be("6");
     }
 }
