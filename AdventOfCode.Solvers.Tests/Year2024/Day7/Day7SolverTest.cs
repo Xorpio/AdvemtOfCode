@@ -7,7 +7,15 @@ public class Day7SolverTest
     private readonly ITestOutputHelper _output;
 
     private string example = """
-    sampleinput
+    190: 10 19
+    3267: 81 40 27
+    83: 17 5
+    156: 15 6
+    7290: 6 8 6 15
+    161011: 16 10 13
+    192: 17 8 14
+    21037: 9 7 18 13
+    292: 11 6 16 20
     """;
 
     public Day7SolverTest(ITestOutputHelper output)
@@ -28,7 +36,7 @@ public class Day7SolverTest
 
         var answer = await solver.Answer1.LastAsync();
 
-        answer.Should().Be("?");
+        answer.Should().Be("3749");
     }
 
     [Fact(DisplayName ="2024 Day 7 Solver Has Correct Solution For Part 2 sample input")]
@@ -44,5 +52,5 @@ public class Day7SolverTest
 
         var answer = await solver.Answer2.LastAsync();
 
-        answer.Should().Be("?");
+        answer.Should().Be("11387");
     }}
