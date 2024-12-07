@@ -41,7 +41,6 @@ public class Day3Solver : BaseSolver
                 input = input[(input.IndexOf("do()") + 4)..];
         }
 
-        logger.OnNext(input);
         count += part1(input);
 
         return count;

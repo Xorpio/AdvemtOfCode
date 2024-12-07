@@ -23,7 +23,7 @@ public class Day7SolverTest
         _output = output;
     }
 
-    [Fact(DisplayName ="2024 Day 7 Solver Has Correct Solution For Part 1 sample input")]
+    [Fact(DisplayName = "2024 Day 7 Solver Has Correct Solution For Part 1 sample input")]
     public async Task Day7SolverHasCorrectSolutionForPart1SampleInputAsync()
     {
         var lines = example.Split(Environment.NewLine);
@@ -39,7 +39,7 @@ public class Day7SolverTest
         answer.Should().Be("3749");
     }
 
-    [Fact(DisplayName ="2024 Day 7 Solver Has Correct Solution For Part 2 sample input")]
+    [Fact(DisplayName = "2024 Day 7 Solver Has Correct Solution For Part 2 sample input")]
     public async Task Day7SolverHasCorrectSolutionForPart2SampleInputAsync()
     {
         var lines = example.Split(Environment.NewLine);
@@ -53,4 +53,14 @@ public class Day7SolverTest
         var answer = await solver.Answer2.LastAsync();
 
         answer.Should().Be("11387");
-    }}
+    }
+
+    [Fact]
+    public async Task testje()
+    {
+        var ints = new int[] { 1, 2, 3, 4, 5 };
+        var ints2 = ints[..3].Concat(ints[3..]).ToArray();
+
+        ints.Should().BeEquivalentTo(ints2);
+    }
+}
