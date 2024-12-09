@@ -44,6 +44,6 @@ public class Day9SolverTest
 
         var answer = await solver.Answer2.LastAsync();
 
-        answer.Should().Be("?");
+        answer.Should().Be("2858");
     }
 }
