@@ -6,41 +6,53 @@ public class Day9Solver : BaseSolver
     {
         bool isFile = true;
         var id = 0;
-        var output = "";
+        var list = new List<int?>();
         foreach (int n in puzzle[0].Select(c => int.Parse(c.ToString())))
         {
             if (isFile)
             {
-                logger.OnNext($"id: {id}, n: {n}");
-                output = output.PadRight(output.Length + n, char.Parse(id.ToString()));
+                for (int i = 0; i < n; i++)
+                {
+                    list.Add(id);
+                }
+
                 id++;
             }
             else
             {
-                output = output.PadRight(output.Length + n, '.');
+                for (int i = 0; i < n; i++)
+                    list.Add(null);
             }
 
             isFile = !isFile;
         }
 
-        //remote . on end?
-
-        while (output.Contains("."))
-        {
-            var indexOfDot = output.IndexOf('.');
-
-            //swap chars
-            output = output.Remove(indexOfDot, 1);
-            output = output.Insert(indexOfDot, output[^1].ToString());
-            output = output[..^1];
-        }
-
+        int index = 0;
         decimal total = 0;
-        for (int i = 0; i < output.Length; i++)
+        //remote . on end?
+        while (true)
         {
-            int c = int.Parse(output[i].ToString());
+            if (list[index] == null)
+            {
+                id = list.Last(i => i != null).Value;
+                var indexOf = list.LastIndexOf(id);
 
-            total += i * c;
+                if (indexOf < index)
+                {
+                    break;
+                }
+                list[indexOf] = null;
+            }
+            else
+            {
+                id = list[index].Value;
+            }
+
+            total += index * id;
+            index++;
+
+            if (index >= list.Count)
+                break;
         }
 
         GiveAnswer1(total);
