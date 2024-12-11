@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "AdventOfCode.Blazor",
   "resources": {
-    "hash": "sha256-5GfPaH1vTtrn5JNnn5mdgQXr5R5i3wcOeXchDBTnRk4=",
+    "hash": "sha256-9SScNwbAkTcp8NnPGMn9jrun+3lfQPJ9Cz9HA/ymBC4=",
     "jsModuleNative": {
       "dotnet.native.8.0.11.n1sf6xr5tz.js": "sha256-VdKq87/z5NIxZKmuM+fv38XF+RcEb/bg3jVBwQSfwP4="
     },
@@ -17,7 +17,7 @@
       "icudt_no_CJK.dat": "sha256-L7sV7NEYP37/Qr2FPCePo5cJqRgTXRwGHuwF5Q+0Nfs="
     },
     "assembly": {
-      "AdventOfCode.Blazor.wasm": "sha256-wByiCmcAUlaUCoDWA8UN7cKb/NylaE1gDAm2saN21Bs=",
+      "AdventOfCode.Blazor.wasm": "sha256-YOqa9aCdhmYe3pyIUVSFhkHgaNX7fQ2lhVEJxZ1nv98=",
       "Microsoft.AspNetCore.Components.wasm": "sha256-CUE26Pb1Uej6BPGfWTT8Uh3JUJ1DAVvHzlO2U+2r1DI=",
       "Microsoft.AspNetCore.Components.Web.wasm": "sha256-xTTCtA8CTC+91s30l2GKJl6R7+7VZtUTCKn37eIsZgc=",
       "Microsoft.AspNetCore.Components.WebAssembly.wasm": "sha256-Nr7UoYm7GcB3IO9S9D7mZvVH/L2X12qxOEhdbS22ejM=",
