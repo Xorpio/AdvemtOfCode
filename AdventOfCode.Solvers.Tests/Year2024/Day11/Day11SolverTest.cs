@@ -44,6 +44,6 @@ public class Day11SolverTest
 
         var answer = await solver.Answer2.LastAsync();
 
-        answer.Should().Be("?");
+        answer.Should().Be("65601038650482");
     }
 }

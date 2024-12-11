@@ -19,7 +19,7 @@ public class Day11Solver : BaseSolver
             }
         }
 
-        while (blinks < 25)
+        while (blinks < 75)
         {
             var newStones = new Dictionary<decimal, decimal>();
             foreach (var stone in stones)
@@ -75,9 +75,11 @@ public class Day11Solver : BaseSolver
             }
             blinks++;
             stones = newStones;
+
+            if (blinks == 25)
+                GiveAnswer1(stones.Sum(s => s.Value));
         }
 
-        GiveAnswer1(stones.Sum(s => s.Value));
-        GiveAnswer2("");
+        GiveAnswer2(stones.Sum(s => s.Value));
     }
 }
