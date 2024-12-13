@@ -55,20 +55,21 @@ public class Day13Solver : BaseSolver
     {
         //extract nubers by regex
         var match = Regex.Matches(puzzle[0], @"(\d+)");
-        (decimal x, decimal y) A = (decimal.Parse(match[0].Value), decimal.Parse(match[1].Value));
+        (double x, double y) A = (double.Parse(match[0].Value), double.Parse(match[1].Value));
         match = Regex.Matches(puzzle[1], @"(\d+)");
-        (decimal x, decimal y) B = (decimal.Parse(match[0].Value), decimal.Parse(match[1].Value));
+        (double x, double y) B = (double.Parse(match[0].Value), double.Parse(match[1].Value));
         match = Regex.Matches(puzzle[2], @"(\d+)");
-        //(decimal x, decimal y) Prize = (decimal.Parse(match[0].Value) + 10000000000000, decimal.Parse(match[1].Value) + 10000000000000);
-        (decimal x, decimal y) Prize = (decimal.Parse(match[0].Value), decimal.Parse(match[1].Value));
+        (double x, double y) Prize = (double.Parse(match[0].Value) + 10000000000000, double.Parse(match[1].Value) + 10000000000000);
 
+        double min = 0;
+        var max = new List<double>() { Prize.x, Prize.y }.Max();
 
-        decimal min = 0;
-        var max = new List<decimal>() { Prize.x, Prize.y }.Max();
+        var minTan = Math.Atan2(Prize.x, Prize.y);
+        var maxTan = Math.Atan2(A.x * max, A.y * max);
 
-        (decimal a, decimal b) angles = (A.x / A.y, B.x / B.y);
+        var bTan = Math.Atan2(B.x, B.y);
 
-        decimal presses = 0;
+        double presses = 0;
 
         while (min != max)
         {
@@ -81,21 +82,23 @@ public class Day13Solver : BaseSolver
                 continue;
             }
 
-            var angle = (Prize.x - (A.x * half)) / (Prize.y - (A.y * half));
+            var tan = Math.Atan2(Prize.x - (A.x * half), Prize.y - ( A.y * half));
 
-            if (angles.b == angle)
+            if (tan == bTan)
             {
                 min = max;
                 presses = half;
                 break;
             }
 
-            var maxAngle = (Prize.x - (A.x * max)) / (Prize.y - (A.y * max));
-            var minAngle = (Prize.x - (A.x * min)) / (Prize.y - (A.y * min));
-            if (angle > angles.b)
+            if ((minTan > bTan && tan < bTan) || minTan < bTan && tan > bTan)
+            {
                 max = half;
+            }
             else
+            {
                 min = half;
+            }
 
             if (max - min <= 1)
                 break;
@@ -110,7 +113,7 @@ public class Day13Solver : BaseSolver
         if ((Prize.x - x) % B.x == 0 && (Prize.y - y) % B.y == 0)
         {
             logger.OnNext($"Presses: {acost} {((Prize.x - x) / B.x)}");
-            return acost + ((Prize.x - x) / B.x);
+            return (decimal)(acost + ((Prize.x - x) / B.x));
         }
 
         logger.OnNext($"Presses: not found");
