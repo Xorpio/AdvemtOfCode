@@ -41,19 +41,4 @@ public class Day14SolverTest
 
         answer.Should().Be("12");
     }
-
-    [Fact(DisplayName ="2024 Day 14 Solver Has Correct Solution For Part 2 sample input")]
-    public async Task Day14SolverHasCorrectSolutionForPart2SampleInputAsync()
-    {
-        var lines = example.Split(Environment.NewLine);
-
-        var solver = new Day14Solver();
-
-        solver.Logger.Subscribe(msg => _output.WriteLine(msg));
-
-        solver.Solve(lines);
-
-        var answer = await solver.Answer2.LastAsync();
-
-        answer.Should().Be("?");
-    }}
+}

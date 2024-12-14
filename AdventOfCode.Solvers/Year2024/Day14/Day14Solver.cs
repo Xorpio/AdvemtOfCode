@@ -51,6 +51,7 @@ var seconds = 0;
 
             if (isTest && seconds > 100)
             {
+                GiveAnswer2("");
                 break;
             }
         }
