@@ -7,7 +7,18 @@ public class Day14SolverTest
     private readonly ITestOutputHelper _output;
 
     private string example = """
-    sampleinput
+    p=0,4 v=3,-3
+    p=6,3 v=-1,-3
+    p=10,3 v=-1,2
+    p=2,0 v=2,-1
+    p=0,0 v=1,3
+    p=3,0 v=-2,-2
+    p=7,6 v=-1,-3
+    p=3,0 v=-1,-2
+    p=9,3 v=2,3
+    p=7,3 v=-1,2
+    p=2,4 v=2,-3
+    p=9,5 v=-3,-3
     """;
 
     public Day14SolverTest(ITestOutputHelper output)
@@ -28,7 +39,7 @@ public class Day14SolverTest
 
         var answer = await solver.Answer1.LastAsync();
 
-        answer.Should().Be("?");
+        answer.Should().Be("12");
     }
 
     [Fact(DisplayName ="2024 Day 14 Solver Has Correct Solution For Part 2 sample input")]
