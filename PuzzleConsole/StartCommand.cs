@@ -26,6 +26,9 @@ public class StartCommand : Command<StartCommand.Settings>
         [CommandArgument(0, "<path>")]
         [Description("Path naar input file")]
         public string Filepath { get; set; }
+
+        [CommandOption("--skip-output")]
+        public bool skipOutput { get; set; }
     }
 
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
@@ -72,6 +75,12 @@ public class StartCommand : Command<StartCommand.Settings>
             var (output, message) = tuple;
             if (output == Output.Log)
             {
+                if (settings.skipOutput)
+                {
+                    return;
+                }
+                message = message.Replace("[", "[[");
+                message = message.Replace("]", "]]");
                 AnsiConsole.MarkupLine($"[grey]{message}[/]");
             }
             else
