@@ -267,7 +267,8 @@ public class Day15Solver : BaseSolver
                         row--;
                         break;
                     }
-                    backup = p.Clone() as char[][];
+                    // Create a deep copy of the 2D array
+                    backup = p.Select(row => row.ToArray()).ToArray();
                     MoveBox(p, row - 1, col, row - 2, col);
                     if (p[row - 1][col] == '.')
                     {
@@ -292,7 +293,7 @@ public class Day15Solver : BaseSolver
                         row++;
                         break;
                     }
-                    backup = p.Clone() as char[][];
+                    backup = p.Select(row => row.ToArray()).ToArray();
                     MoveBox(p, row + 1, col, row + 2, col);
                     if (p[row + 1][col] == '.')
                     {
@@ -317,7 +318,7 @@ public class Day15Solver : BaseSolver
                         col--;
                         break;
                     }
-                    backup = p.Clone() as char[][];
+                    backup = p.Select(row => row.ToArray()).ToArray();
                     MoveBox(p, row, col - 1, row, col - 2);
                     if (p[row][col - 1] == '.')
                     {
@@ -343,7 +344,7 @@ public class Day15Solver : BaseSolver
                         col++;
                         break;
                     }
-                    backup = p.Clone() as char[][];
+                    backup = p.Select(row => row.ToArray()).ToArray();
                     MoveBox(p, row, col + 1, row, col + 2);
                     if (p[row][col + 1] == '.')
                     {
@@ -362,7 +363,7 @@ public class Day15Solver : BaseSolver
                 {
                     line += p[r][c];
                 }
-                // logger.OnNext(line);
+                logger.OnNext(line);
             }
             logger.OnNext("");
         }
