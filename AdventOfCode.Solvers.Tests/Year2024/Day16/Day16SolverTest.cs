@@ -7,7 +7,21 @@ public class Day16SolverTest
     private readonly ITestOutputHelper _output;
 
     private string example = """
-    sampleinput
+    ###############
+    #.......#....E#
+    #.#.###.#.###.#
+    #.....#.#...#.#
+    #.###.#####.#.#
+    #.#.#.......#.#
+    #.#.#####.###.#
+    #...........#.#
+    ###.#.#####.#.#
+    #...#.....#.#.#
+    #.#.#.###.#.#.#
+    #.....#...#.#.#
+    #.###.#.#.#.#.#
+    #S..#.....#...#
+    ###############
     """;
 
     public Day16SolverTest(ITestOutputHelper output)
@@ -28,7 +42,7 @@ public class Day16SolverTest
 
         var answer = await solver.Answer1.LastAsync();
 
-        answer.Should().Be("?");
+        answer.Should().Be("7036");
     }
 
     [Fact(DisplayName ="2024 Day 16 Solver Has Correct Solution For Part 2 sample input")]
