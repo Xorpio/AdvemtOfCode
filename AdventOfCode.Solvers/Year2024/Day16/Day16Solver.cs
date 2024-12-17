@@ -1,13 +1,23 @@
 
+using System.Runtime.CompilerServices;
 using System.Security;
 
 namespace AdventOfCode.Solvers.Year2024.Day16;
 
 public class Day16Solver : BaseSolver
 {
+    public static (int row, int col)[] directions =
+    [
+        (-1, 0), // North
+        (0, 1), // East
+        (1, 0), // South
+        (0, -1), // West
+    ];
+
     public override void Solve(string[] puzzle)
     {
-        (int startrow, int startcol, int endrow, int endcol) = (0, 0, 0, 0);
+        (int row, int col) start = (0, 0);
+        (int row, int col) end = (0, 0);
 
         for (int row = 0; row < puzzle.Length; row++)
         {
@@ -15,28 +25,49 @@ public class Day16Solver : BaseSolver
             {
                 if (puzzle[row][col] == 'S')
                 {
-                    startrow = row;
-                    startcol = col;
+                    start = (row, col);
                 }
                 else if (puzzle[row][col] == 'E')
                 {
-                    endrow = row;
-                    endcol = col;
+                    end = (row, col);
                 }
             }
         }
 
-        var score = dijkstra(puzzle, startrow, startcol, endrow, endcol);
+        (List<(int row, int col, Direction dir)> path, int score) = Dijkstra(puzzle, start, end, Direction.East);
 
         GiveAnswer1(score);
-        GiveAnswer2("");
-    }
-    private decimal dijkstra(string[] puzzle, int startrow, int startcol, int endrow, int endcol)
-    {
-        var unvisited = new Dictionary<(int row, int col, Direction dir), decimal>();
-        var Visited = new Dictionary<(int row, int col, Direction dir), decimal>();
+        for (int row = 0; row < puzzle.Length; row++)
+        {
+            var line = "";
+            for (int col = 0; col < puzzle[row].Length; col++)
+            {
+                if (path.Any(p => p.row == row && p.col == col))
+                {
+                    line += path.First(p => p.row == row && p.col == col).dir switch
+                    {
+                        Direction.North => "^",
+                        Direction.East => ">",
+                        Direction.South => "v",
+                        Direction.West => "<",
+                        _ => throw new Exception("Invalid direction")
+                    };
+                }
+                else
+                {
+                    line += puzzle[row][col];
+                }
+            }
+            logger.OnNext(line);
+        }
 
-        //initialize the nodes
+        GiveAnswer2("?");
+    }
+
+    public (List<(int row, int col, Direction dir)>, int score) Dijkstra(string[] puzzle, (int row, int col) start, (int row, int col) end, Direction dir)
+    {
+        var distances = new Dictionary<(int row, int col, Direction dir), int>();
+
         for (int row = 0; row < puzzle.Length; row++)
         {
             for (int col = 0; col < puzzle[row].Length; col++)
@@ -44,203 +75,112 @@ public class Day16Solver : BaseSolver
                 if (puzzle[row][col] == '#')
                     continue;
 
-                unvisited.Add((row, col, Direction.North), decimal.MaxValue);
-                unvisited.Add((row, col, Direction.East), decimal.MaxValue);
-                unvisited.Add((row, col, Direction.South), decimal.MaxValue);
-                unvisited.Add((row, col, Direction.West), decimal.MaxValue);
+                if (puzzle[row + 1][col] != '#')
+                    distances.Add((row, col, Direction.North), int.MaxValue);
+                if (puzzle[row][col - 1] != '#')
+                    distances.Add((row, col, Direction.East), int.MaxValue);
+                if (puzzle[row - 1][col] != '#')
+                    distances.Add((row, col, Direction.South), int.MaxValue);
+                if (puzzle[row][col + 1] != '#')
+                    distances.Add((row, col, Direction.West), int.MaxValue);
             }
         }
+        distances[(start.row, start.col, dir)] = 0;
 
-        unvisited[(startrow, startcol, Direction.East)] = 0;
-
-        while (unvisited.Count > 0)
+        var priorityQueue = new SortedSet<(int score, (int row, int col, Direction dir) node)>
         {
-            var next = unvisited.OrderBy(x => x.Value).First();
+            (0, (start.row, start.col, Direction.East))
+        };
 
-            if (next.Key.row == endrow && next.Key.col == endcol)
+        var previous = new Dictionary<(int row, int col, Direction dir), (int row, int col, Direction dir)>();
+        while (priorityQueue.Count > 0)
+        {
+            var current = priorityQueue.Min;
+            priorityQueue.Remove(current);
+
+            if (current.node.row == end.row && current.node.col == end.col)
             {
-                return next.Value;
+                return ReconstructPath(previous, (end.row, end.col, Direction.East));
             }
 
-            unvisited.Remove(next.Key);
-            Visited.Add(next.Key, next.Value);
-
-            switch (next.Key.dir)
+            foreach (var direction in directions)
             {
-                case Direction.North:
-                    if (unvisited.ContainsKey((next.Key.row - 1, next.Key.col, next.Key.dir)) && unvisited[(next.Key.row - 1, next.Key.col, next.Key.dir)] > next.Value + 1)
-                    {
-                        unvisited[(next.Key.row - 1, next.Key.col, next.Key.dir)] = next.Value + 1;
-                    }
-                    if (unvisited.ContainsKey((next.Key.row, next.Key.col, Direction.West)) && unvisited[(next.Key.row, next.Key.col, Direction.West)] > next.Value + 1000)
-                    {
-                        unvisited[(next.Key.row, next.Key.col, Direction.West)] = next.Value + 1000;
-                    }
-                    if (unvisited.ContainsKey((next.Key.row, next.Key.col, Direction.East)) && unvisited[(next.Key.row, next.Key.col, Direction.East)] > next.Value + 1000)
-                    {
-                        unvisited[(next.Key.row, next.Key.col, Direction.East)] = next.Value + 1000;
-                    }
-                    if (unvisited.ContainsKey((next.Key.row, next.Key.col, Direction.South)) && unvisited[(next.Key.row, next.Key.col, Direction.South)] > next.Value + 2000)
-                    {
-                        unvisited[(next.Key.row, next.Key.col, Direction.South)] = next.Value + 2000;
-                    }
-                    break;
-                case Direction.East:
-                    if (unvisited.ContainsKey((next.Key.row, next.Key.col + 1, next.Key.dir)) && unvisited[(next.Key.row, next.Key.col + 1, next.Key.dir)] > next.Value + 1)
-                    {
-                        unvisited[(next.Key.row, next.Key.col + 1, next.Key.dir)] = next.Value + 1;
-                    }
-                    if (unvisited.ContainsKey((next.Key.row, next.Key.col, Direction.North)) && unvisited[(next.Key.row, next.Key.col, Direction.North)] > next.Value + 1000)
-                    {
-                        unvisited[(next.Key.row, next.Key.col, Direction.North)] = next.Value + 1000;
-                    }
-                    if (unvisited.ContainsKey((next.Key.row, next.Key.col, Direction.South)) && unvisited[(next.Key.row, next.Key.col, Direction.South)] > next.Value + 1000)
-                    {
-                        unvisited[(next.Key.row, next.Key.col, Direction.South)] = next.Value + 1000;
-                    }
-                    if (unvisited.ContainsKey((next.Key.row, next.Key.col, Direction.West)) && unvisited[(next.Key.row, next.Key.col, Direction.West)] > next.Value + 2000)
-                    {
-                        unvisited[(next.Key.row, next.Key.col, Direction.West)] = next.Value + 2000;
-                    }
-                    break;
-                case Direction.South:
-                    if (unvisited.ContainsKey((next.Key.row + 1, next.Key.col, next.Key.dir)) && unvisited[(next.Key.row + 1, next.Key.col, next.Key.dir)] > next.Value + 1)
-                    {
-                        unvisited[(next.Key.row + 1, next.Key.col, next.Key.dir)] = next.Value + 1;
-                    }
-                    if (unvisited.ContainsKey((next.Key.row, next.Key.col, Direction.West)) && unvisited[(next.Key.row, next.Key.col, Direction.West)] > next.Value + 1000)
-                    {
-                        unvisited[(next.Key.row, next.Key.col, Direction.West)] = next.Value + 1000;
-                    }
-                    if (unvisited.ContainsKey((next.Key.row, next.Key.col, Direction.East)) && unvisited[(next.Key.row, next.Key.col, Direction.East)] > next.Value + 1000)
-                    {
-                        unvisited[(next.Key.row, next.Key.col, Direction.East)] = next.Value + 1000;
-                    }
-                    if (unvisited.ContainsKey((next.Key.row, next.Key.col, Direction.North)) && unvisited[(next.Key.row, next.Key.col, Direction.North)] > next.Value + 2000)
-                    {
-                        unvisited[(next.Key.row, next.Key.col, Direction.North)] = next.Value + 2000;
-                    }
-                    break;
-                case Direction.West:
-                    if (unvisited.ContainsKey((next.Key.row, next.Key.col - 1, next.Key.dir)) && unvisited[(next.Key.row, next.Key.col - 1, next.Key.dir)] > next.Value + 1)
-                    {
-                        unvisited[(next.Key.row, next.Key.col - 1, next.Key.dir)] = next.Value + 1;
-                    }
-                    if (unvisited.ContainsKey((next.Key.row, next.Key.col, Direction.North)) && unvisited[(next.Key.row, next.Key.col, Direction.North)] > next.Value + 1000)
-                    {
-                        unvisited[(next.Key.row, next.Key.col, Direction.North)] = next.Value + 1000;
-                    }
-                    if (unvisited.ContainsKey((next.Key.row, next.Key.col, Direction.South)) && unvisited[(next.Key.row, next.Key.col, Direction.South)] > next.Value + 1000)
-                    {
-                        unvisited[(next.Key.row, next.Key.col, Direction.South)] = next.Value + 1000;
-                    }
-                    if (unvisited.ContainsKey((next.Key.row, next.Key.col, Direction.East)) && unvisited[(next.Key.row, next.Key.col, Direction.East)] > next.Value + 2000)
-                    {
-                        unvisited[(next.Key.row, next.Key.col, Direction.East)] = next.Value + 2000;
-                    }
-                    break;
+                var newRow = current.node.row + direction.row;
+                var newCol = current.node.col + direction.col;
+
+                if (puzzle[newRow][newCol] == '#')
+                    continue;
+
+                var newDirection = direction switch
+                {
+                    (-1, 0) => Direction.North,
+                    (0, 1) => Direction.East,
+                    (1, 0) => Direction.South,
+                    (0, -1) => Direction.West,
+                    _ => throw new Exception("Invalid direction")
+                };
+
+                var newScore = current.score;
+                switch (current.node.dir)
+                {
+                    case Direction.North:
+                        if (direction == directions[0])
+                            newScore += 1;
+                        else
+                            newScore += 1001;
+                        break;
+                    case Direction.East:
+                        if (direction == directions[1])
+                            newScore += 1;
+                        else
+                            newScore += 1001;
+                        break;
+                    case Direction.South:
+                        if (direction == directions[2])
+                            newScore += 1;
+                        else
+                            newScore += 1001;
+                        break;
+                    case Direction.West:
+                        if (direction == directions[3])
+                            newScore += 1;
+                        else
+                            newScore += 1001;
+                        break;
+                }
+
+                if (distances[(newRow, newCol, newDirection)] > newScore)
+                {
+                    priorityQueue.Remove((distances[(newRow, newCol, newDirection)], (newRow, newCol, newDirection)));
+                    distances[(newRow, newCol, newDirection)] = newScore;
+                    priorityQueue.Add((newScore, (newRow, newCol, newDirection)));
+                    previous[(newRow, newCol, newDirection)] = current.node;
+                }
             }
         }
 
-        return 0;
+        return new();
     }
 
-    private decimal dijkstra2(string[] puzzle, int startrow, int startcol, int endrow, int endcol)
+    static (List<(int row, int col, Direction dir)> path, int score) ReconstructPath(Dictionary<(int row, int col, Direction dir), (int row, int col, Direction dir)> previous, (int row, int col, Direction dir) end)
     {
-        var unvisited = new PriorityQueue<(int row, int col, Direction dir, int score), int>();
-        var visited = new Dictionary<(int row, int col, Direction dir), int>();
-
-        unvisited.Enqueue((startrow, startcol, Direction.East, 0), 0);
-
-        while (unvisited.Count > 0)
+        var score = 0;
+        var path = new List<(int row, int col, Direction dir)>();
+        var current = previous.First(p => p.Key.row == end.row && p.Key.col == end.col).Key;
+        while (previous.ContainsKey(current))
         {
-            var next = unvisited.Dequeue();
-            if (visited.ContainsKey((next.row, next.col, next.dir)))
-            {
-                continue;
-            }
-
-            visited.Add((next.row, next.col, next.dir), next.score);
-
-            if (next.row == endrow && next.col == endcol)
-            {
-                return next.score;
-            }
-
-            var northScore = visited[(next.row, next.col, next.dir)] + (next.dir == Direction.South
-                ? 2000
-                : next.dir == Direction.North
-                    ? 0
-                    : 1000);
-
-            var eastScore = visited[(next.row, next.col, next.dir)] + (next.dir == Direction.West
-                ? 2000
-                : next.dir == Direction.East
-                    ? 0
-                    : 1000);
-
-            var southScore = visited[(next.row, next.col, next.dir)] + (next.dir == Direction.North
-                ? 2000
-                : next.dir == Direction.South
-                    ? 0
-                    : 1000);
-
-            var westScore = visited[(next.row, next.col, next.dir)] + (next.dir == Direction.East
-                ? 2000
-                : next.dir == Direction.West
-                    ? 0
-                    : 1000);
-
-            //add turns
-            if (!visited.ContainsKey((next.row, next.col, Direction.North)))
-            {
-                unvisited.Enqueue((next.row, next.col, Direction.North, next.score + northScore), (next.score + northScore) * 1);
-            }
-            if (!visited.ContainsKey((next.row, next.col, Direction.East)))
-            {
-                unvisited.Enqueue((next.row, next.col, Direction.East, next.score + eastScore), (next.score + eastScore) * 1);
-            }
-            if (!visited.ContainsKey((next.row, next.col, Direction.South)))
-            {
-                unvisited.Enqueue((next.row, next.col, Direction.South, next.score + southScore), (next.score + southScore) * 1);
-            }
-            if (!visited.ContainsKey((next.row, next.col, Direction.West)))
-            {
-                unvisited.Enqueue((next.row, next.col, Direction.West, next.score + westScore), (next.score + westScore) * 1);
-            }
-
-            //move forward
-            switch (next.dir)
-            {
-                case Direction.North:
-                    if (next.row > 0 && puzzle[next.row - 1][next.col] != '#' && !visited.ContainsKey((next.row - 1, next.col, next.dir)))
-                    {
-                        unvisited.Enqueue((next.row - 1, next.col, next.dir, next.score + 1), (next.score + 1) * 1);
-                    }
-                    break;
-                case Direction.East:
-                    if (next.col < puzzle[next.row].Length - 1 && puzzle[next.row][next.col + 1] != '#' && !visited.ContainsKey((next.row, next.col + 1, next.dir)))
-                    {
-                        unvisited.Enqueue((next.row, next.col + 1, next.dir, next.score + 1), (next.score + 1) * 1);
-                    }
-                    break;
-                case Direction.South:
-                    if (next.row < puzzle.Length - 1 && puzzle[next.row + 1][next.col] != '#' && !visited.ContainsKey((next.row + 1, next.col, next.dir)))
-                    {
-                        unvisited.Enqueue((next.row + 1, next.col, next.dir, next.score + 1), (next.score + 1) * 1);
-                    }
-                    break;
-                case Direction.West:
-                    if (next.col > 0 && puzzle[next.row][next.col - 1] != '#' && !visited.ContainsKey((next.row, next.col - 1, next.dir)))
-                    {
-                        unvisited.Enqueue((next.row, next.col - 1, next.dir, next.score + 1), (next.score + 1) * 1);
-                    }
-                    break;
-            }
+            path.Add(current);
+            current = previous[current];
+            if (current.dir != path.Last().dir)
+                score += 1001;
+            else
+                score += 1;
         }
-
-        return decimal.MaxValue;
+        path.Add(current);
+        path.Reverse();
+        return (path, score);
     }
+
 }
 
 public enum Direction

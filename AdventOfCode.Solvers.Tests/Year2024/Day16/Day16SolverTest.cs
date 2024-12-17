@@ -29,7 +29,7 @@ public class Day16SolverTest
         _output = output;
     }
 
-    [Fact(DisplayName ="2024 Day 16 Solver Has Correct Solution For Part 1 sample input")]
+    [Fact(DisplayName = "2024 Day 16 Solver Has Correct Solution For Part 1 sample input")]
     public async Task Day16SolverHasCorrectSolutionForPart1SampleInputAsync()
     {
         var lines = example.Split(Environment.NewLine);
@@ -45,7 +45,7 @@ public class Day16SolverTest
         answer.Should().Be("7036");
     }
 
-    [Fact(DisplayName ="2024 Day 16 Solver Has Correct Solution For Part 2 sample input")]
+    [Fact(DisplayName = "2024 Day 16 Solver Has Correct Solution For Part 2 sample input")]
     public async Task Day16SolverHasCorrectSolutionForPart2SampleInputAsync()
     {
         var lines = example.Split(Environment.NewLine);
@@ -59,4 +59,5 @@ public class Day16SolverTest
         var answer = await solver.Answer2.LastAsync();
 
         answer.Should().Be("?");
-    }}
+    }
+}
