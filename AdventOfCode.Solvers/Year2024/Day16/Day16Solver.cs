@@ -34,9 +34,9 @@ public class Day16Solver : BaseSolver
             }
         }
 
-        (List<(int row, int col, Direction dir)> path, int score) = Dijkstra(puzzle, start, end, Direction.East);
+        var path = Dijkstra(puzzle, start, end, Direction.East);
 
-        GiveAnswer1(score);
+        GiveAnswer1(path.Max(p => p.score));
         for (int row = 0; row < puzzle.Length; row++)
         {
             var line = "";
@@ -64,7 +64,7 @@ public class Day16Solver : BaseSolver
         GiveAnswer2("?");
     }
 
-    public (List<(int row, int col, Direction dir)>, int score) Dijkstra(string[] puzzle, (int row, int col) start, (int row, int col) end, Direction dir)
+    public List<(int row, int col, Direction dir, int score)> Dijkstra(string[] puzzle, (int row, int col) start, (int row, int col) end, Direction dir)
     {
         var distances = new Dictionary<(int row, int col, Direction dir), int>();
 
@@ -162,23 +162,24 @@ public class Day16Solver : BaseSolver
         return new();
     }
 
-    static (List<(int row, int col, Direction dir)> path, int score) ReconstructPath(Dictionary<(int row, int col, Direction dir), (int row, int col, Direction dir)> previous, (int row, int col, Direction dir) end)
+    static List<(int row, int col, Direction dir, int score)> ReconstructPath(Dictionary<(int row, int col, Direction dir), (int row, int col, Direction dir)> previous, (int row, int col, Direction dir) end)
     {
         var score = 0;
-        var path = new List<(int row, int col, Direction dir)>();
+        var path = new List<(int row, int col, Direction dir, int score)>();
         var current = previous.First(p => p.Key.row == end.row && p.Key.col == end.col).Key;
         while (previous.ContainsKey(current))
         {
-            path.Add(current);
+            path.Add((current.row, current.col, current.dir, score));
             current = previous[current];
             if (current.dir != path.Last().dir)
                 score += 1001;
             else
                 score += 1;
         }
-        path.Add(current);
+        path.Add((current.row, current.col, current.dir, score));
         path.Reverse();
-        return (path, score);
+        path = path.Select(p => (p.row, p.col, p.dir, score - p.score)).ToList();
+        return path;
     }
 
 }
