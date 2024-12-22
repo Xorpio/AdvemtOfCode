@@ -8,7 +8,7 @@ public class Day16SolverTest
 
     private string example = """
     ###############
-    #.......#....S#
+    #.......#....E#
     #.#.###.#.###.#
     #.....#.#...#.#
     #.###.#####.#.#
@@ -20,7 +20,7 @@ public class Day16SolverTest
     #.#.#.###.#.#.#
     #.....#...#.#.#
     #.###.#.#.#.#.#
-    #E..#.....#...#
+    #S..#.....#...#
     ###############
     """;
 
@@ -63,6 +63,41 @@ public class Day16SolverTest
 
     [Fact(DisplayName = "2024 Day 16 Solver Has Correct Solution For Part 2 more input")]
     public async Task Day16SolverHasCorrectSolutionForPart2moreSampleInputAsync()
+    {
+        var e = """
+        #################
+        #...#...#...#..S#
+        #.#.#.#.#.#.#.#.#
+        #.#.#.#...#...#.#
+        #.#.#.#.###.#.#.#
+        #...#.#.#.....#.#
+        #.#.#.#.#.#####.#
+        #.#...#.#.#.....#
+        #.#.#####.#.###.#
+        #.#.#.......#...#
+        #.#.###.#####.###
+        #.#.#...#.....#.#
+        #.#.#.#####.###.#
+        #.#.#.........#.#
+        #.#.#.#########.#
+        #E#.............#
+        #################
+        """;
+        var lines = e.Split(Environment.NewLine);
+
+        var solver = new Day16Solver();
+
+        solver.Logger.Subscribe(msg => _output.WriteLine(msg));
+
+        solver.Solve(lines);
+
+        var answer = await solver.Answer2.LastAsync();
+
+        answer.Should().Be("64");
+    }
+
+    [Fact(DisplayName = "2024 Day 16 Solver Has Correct Solution For Part 2 even more input")]
+    public async Task Day16SolverHasCorrectSolutionForPart2evenmoreSampleInputAsync()
     {
         var e = """
         #################
