@@ -34,7 +34,7 @@ public abstract class BaseSolver
     {
         GiveAnswer2(answer.ToString());
     }
-    
+
     protected void GiveAnswer2(string answer)
     {
         answer2.OnNext(answer);
@@ -50,5 +50,18 @@ public abstract class BaseSolver
     {
         answer1 = new ReplaySubject<string>(1);
         answer2 = new ReplaySubject<string>(1);
+    }
+
+    public static bool IsRunningFromUnitTest()
+    {
+        var testAssemblies = new[]
+        {
+            "xunit.core",
+            "nunit.framework",
+            "Microsoft.VisualStudio.TestPlatform.TestFramework"
+        };
+
+        return AppDomain.CurrentDomain.GetAssemblies()
+            .Any(a => testAssemblies.Contains(a.GetName().Name, StringComparer.OrdinalIgnoreCase));
     }
 }
