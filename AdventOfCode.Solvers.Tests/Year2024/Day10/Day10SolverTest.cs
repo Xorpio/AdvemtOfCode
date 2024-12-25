@@ -7,7 +7,14 @@ public class Day10SolverTest
     private readonly ITestOutputHelper _output;
 
     private string example = """
-    sampleinput
+    89010123
+    78121874
+    87430965
+    96549874
+    45678903
+    32019012
+    01329801
+    10456732
     """;
 
     public Day10SolverTest(ITestOutputHelper output)
@@ -28,7 +35,7 @@ public class Day10SolverTest
 
         var answer = await solver.Answer1.LastAsync();
 
-        answer.Should().Be("?");
+        answer.Should().Be("36");
     }
 
     [Fact(DisplayName = "2024 Day 10 Solver Has Correct Solution For Part 2 sample input")]
@@ -44,6 +51,6 @@ public class Day10SolverTest
 
         var answer = await solver.Answer2.LastAsync();
 
-        answer.Should().Be("?");
+        answer.Should().Be("81");
     }
 }
