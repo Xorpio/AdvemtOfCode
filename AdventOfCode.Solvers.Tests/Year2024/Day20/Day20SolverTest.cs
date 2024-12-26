@@ -7,7 +7,21 @@ public class Day20SolverTest
     private readonly ITestOutputHelper _output;
 
     private string example = """
-    sampleinput
+    ###############
+    #...#...#.....#
+    #.#.#.#.#.###.#
+    #S#...#.#.#...#
+    #######.#.#.###
+    #######.#.#...#
+    #######.#.###.#
+    ###..E#...#...#
+    ###.#######.###
+    #...###...#...#
+    #.#####.#.###.#
+    #.#...#.#.#...#
+    #.#.#.#.#.#.###
+    #...#...#...###
+    ###############
     """;
 
     public Day20SolverTest(ITestOutputHelper output)
@@ -28,7 +42,7 @@ public class Day20SolverTest
 
         var answer = await solver.Answer1.LastAsync();
 
-        answer.Should().Be("?");
+        answer.Should().Be("43");
     }
 
     [Fact(DisplayName = "2024 Day 20 Solver Has Correct Solution For Part 2 sample input")]
