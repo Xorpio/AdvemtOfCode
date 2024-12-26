@@ -1,94 +1,85 @@
 
+using System.ComponentModel.DataAnnotations;
+using System.Reflection.Metadata;
+
 namespace AdventOfCode.Solvers.Year2024.Day20;
 
 public class Day20Solver : BaseSolver
 {
     public override void Solve(string[] puzzle)
     {
-        var maze = puzzle.Select(x => x.ToCharArray()).ToArray();
+        //var maze = puzzle.Select(x => x.ToCharArray()).ToArray();
 
         (int row, int col) start = (0, 0);
         (int row, int col) end = (0, 0);
 
-        for (int row = 0; row < maze.Length; row++)
+        for (int row = 0; row < puzzle.Length; row++)
         {
-            for (int col = 0; col < maze[row].Length; col++)
+            for (int col = 0; col < puzzle[row].Length; col++)
             {
-                if (maze[row][col] == 'S')
+                if (puzzle[row][col] == 'S')
                 {
                     start = (row, col);
                 }
-                if (maze[row][col] == 'E')
+                if (puzzle[row][col] == 'E')
                 {
                     end = (row, col);
                 }
             }
         }
 
-        var basetime = GetTime(maze, start, end);
+        var map = new Dictionary<(int row, int col), int>();
 
-        var minimal = IsRunningFromUnitTest() ? 50 : 100;
-
-        var cheats = 0;
-
-        for (int row = 1; row < maze.Length - 1; row++)
+        var count = 0;
+        while (!map.ContainsKey(end))
         {
-            for (int col = 1; col < maze[row].Length - 1; col++)
+            map.Add(start, count);
+            foreach (var (row, col) in new (int row, int col)[] { (0, 1), (0, -1), (1, 0), (-1, 0) })
             {
-                if (maze[row][col] == '#')
+                var newRow = start.row + row;
+                var newCol = start.col + col;
+                if (puzzle[newRow][newCol] != '#' && !map.ContainsKey((newRow, newCol)))
                 {
-                    var newMaze = maze.Select(x => x.ToArray()).ToArray();
-                    newMaze[row][col] = '.';
-                    var time = GetTime(newMaze, start, end);
+                    start = (newRow, newCol);
+                    count++;
+                    break;
+                }
+            }
+        }
 
-                    var diff = basetime - time;
-                    if (diff >= minimal)
-                    {
-                        cheats++;
-                    }
+        var minimalCheat = IsRunningFromUnitTest() ? 50 : 100;
+        var cheats = 0;
+        var cheats2 = 0;
+        var done = new HashSet<((int row, int col) start, (int row, int col) end)>();
+        foreach (var (keystart, valuestart) in map)
+        {
+            foreach (var (keyend, valueend) in map)
+            {
+                if (valuestart >= valueend)
+                {
+                    continue;
+                }
+
+                var distance = CalculateManhattanDistance(keystart, keyend);
+
+                if (distance < 3 && ((valuestart - valueend + distance) * -1) >= minimalCheat)
+                {
+                    cheats++;
+                }
+                if (distance < 21 && ((valuestart - valueend + distance) * -1) >= minimalCheat)
+                {
+                    cheats2++;
                 }
             }
         }
 
         GiveAnswer1(cheats);
-        GiveAnswer2("");
+
+        GiveAnswer2(cheats2);
     }
 
-    private int GetTime(char[][] maze, (int row, int col) start, (int row, int col) end)
+    public int CalculateManhattanDistance((int row, int col) point1, (int row, int col) point2)
     {
-        var priorityQueue = new PriorityQueue<(int row, int col, int time), int>();
-
-        var visited = new HashSet<(int row, int col)>();
-        priorityQueue.Enqueue((start.row, start.col, 0), 0);
-
-        while (priorityQueue.Count > 0)
-        {
-            var next = priorityQueue.Dequeue();
-            visited.Add((next.row, next.col));
-
-            if (next.row == end.row && next.col == end.col)
-            {
-                return next.time;
-            }
-
-            foreach (var (row, col) in new (int row, int col)[] { (0, 1), (0, -1), (1, 0), (-1, 0) })
-            {
-                var newRow = next.row + row;
-                var newCol = next.col + col;
-                if (maze[newRow][newCol] == '#')
-                {
-                    continue;
-                }
-
-                if (visited.Contains((newRow, newCol)))
-                {
-                    continue;
-                }
-                priorityQueue.Enqueue((newRow, newCol, next.time + 1), next.time + 1);
-            }
-        }
-
-        logger.OnNext("No path found");
-        return -1;
+        return Math.Abs(point1.row - point2.row) + Math.Abs(point1.col - point2.col);
     }
 }

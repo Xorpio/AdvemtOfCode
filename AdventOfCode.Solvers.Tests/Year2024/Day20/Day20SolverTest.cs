@@ -42,7 +42,7 @@ public class Day20SolverTest
 
         var answer = await solver.Answer1.LastAsync();
 
-        answer.Should().Be("43");
+        answer.Should().Be("1");
     }
 
     [Fact(DisplayName = "2024 Day 20 Solver Has Correct Solution For Part 2 sample input")]
@@ -58,6 +58,6 @@ public class Day20SolverTest
 
         var answer = await solver.Answer2.LastAsync();
 
-        answer.Should().Be("?");
+        answer.Should().Be("285");
     }
 }
