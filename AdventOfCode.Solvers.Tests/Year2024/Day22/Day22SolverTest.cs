@@ -35,7 +35,6 @@ public class Day22SolverTest
     }
 
     [Theory(DisplayName = "calc works")]
-    [InlineData(5764801, 8)]
     [InlineData(15887950, 1)]
     [InlineData(16495136, 2)]
     [InlineData(527345, 3)]
@@ -50,7 +49,7 @@ public class Day22SolverTest
     {
         var solver = new Day22Solver();
         var result = solver.calcSecret(123, iterations);
-        result.Should().Be(expected);
+        result.Last().Should().Be(expected);
     }
 
     [Fact(DisplayName = "2024 Day 22 Solver Has Correct Solution For Part 2 sample input")]
