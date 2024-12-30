@@ -75,6 +75,6 @@ public class Day23SolverTest
 
         var answer = await solver.Answer2.LastAsync();
 
-        answer.Should().Be("?");
+        answer.Should().Be("co,de,ka,ta");
     }
 }
